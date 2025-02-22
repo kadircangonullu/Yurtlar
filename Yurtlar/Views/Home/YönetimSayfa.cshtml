@@ -1,0 +1,82 @@
+﻿
+@{
+    ViewBag.Title = "Kullanıcılar";
+    Layout = "~/Views/Shared/Admin.cshtml";
+}
+
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kullanıcılar - Yönetim Paneli</title>
+</head>
+<body>
+    <main class="content">
+        <h1>Kayıtlı Kullanıcılar</h1>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Ad</th>
+                    <th>Soyad</th>
+                    <th>Telefon Numarası</th>
+                    <th>Şifre</th>
+                    <th>İşlemler</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Ahmet</td>
+                    <td>Yılmaz</td>
+                    <td>+90 555 123 45 67</td>
+                    <td>********</td>
+                    <td>
+                        <button class="btn btn-warning">Düzenle</button>
+                        <button class="btn btn-danger">Sil</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Mehmet</td>
+                    <td>Kaya</td>
+                    <td>+90 544 987 65 43</td>
+                    <td>********</td>
+                    <td>
+                        <button class="btn btn-warning">Düzenle</button>
+                        <button class="btn btn-danger">Sil</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Elif</td>
+                    <td>Demir</td>
+                    <td>+90 532 234 56 78</td>
+                    <td>********</td>
+                    <td>
+                        <button class="btn btn-warning">Düzenle</button>
+                        <button class="btn btn-danger">Sil</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Ayşe</td>
+                    <td>Çelik</td>
+                    <td>+90 530 876 54 32</td>
+                    <td>********</td>
+                    <td>
+                        <button class="btn btn-warning">Düzenle</button>
+                        <button class="btn btn-danger">Sil</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Burak</td>
+                    <td>Şahin</td>
+                    <td>+90 555 345 67 89</td>
+                    <td>********</td>
+                    <td>
+                        <button class="btn btn-warning">Düzenle</button>
+                        <button class="btn btn-danger">Sil</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </main>
+</body>
+</html>

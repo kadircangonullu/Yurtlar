@@ -1,0 +1,56 @@
+﻿@{
+    ViewBag.Title = "UrunleriListele";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-4">
+    <h2 class="text-center my-4">Satıştaki Ürünler</h2>
+    <div class="table-responsive">
+        <table class="table table-striped table-bordered">
+            <thead class="table-dark">
+                <tr>
+                    <th>Resim</th>
+                    <th>Ürün Adı</th>
+                    <th>Ürün Kodu</th>
+                    <th>Fiyat</th>
+                    <th>Adet</th>
+                    <th>Durum</th>
+                    <th>Eylem</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><img src="https://via.placeholder.com/50" alt="Ürün 1" class="img-thumbnail"></td>
+                    <td>Apple Cinema 30"</td>
+                    <td>product 20</td>
+                    <td>100.00₺</td>
+                    <td><span class="badge bg-success">995</span></td>
+                    <td><span class="text-success">Açık</span></td>
+                    <td><button class="btn btn-primary btn-sm">Düzenle</button></td>
+                </tr>
+                <tr>
+                    <td><img src="https://via.placeholder.com/50" alt="Ürün 2" class="img-thumbnail"></td>
+                    <td>Canon EOS 5D</td>
+                    <td>SAM1</td>
+                    <td>199.99₺</td>
+                    <td><span class="badge bg-warning">0</span></td>
+                    <td><span class="text-success">Açık</span></td>
+                    <td><button class="btn btn-primary btn-sm">Düzenle</button></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<style>
+    .table td, .table th {
+        vertical-align: middle;
+        text-align: center;
+    }
+
+    .img-thumbnail {
+        width: 50px;
+        height: 50px;
+        object-fit: cover;
+    }
+</style>
