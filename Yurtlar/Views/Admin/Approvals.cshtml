@@ -1,0 +1,41 @@
+﻿@model List<Yurtlar.Product>
+@{
+    ViewBag.Title = "Approvals";
+    Layout = "~/Views/Shared/Admin.cshtml";
+}
+
+<h3>Onay Bekleyen Ürünler</h3>
+<table class="table table-bordered">
+    <thead class="table-dark">
+        <tr>
+            <th>Ad</th>
+            <th>Açıklama</th>
+            <th>Fiyat</th>
+            <th>Stok</th>
+            <th>Yurt</th>
+            <th>İşlem</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.PName</td>
+                <td>@item.PDesc</td>
+                <td>@item.PPrice ₺</td>
+                <td>@item.PStock</td>
+                <td>@item.PKyk</td>
+                <td>
+                    <form method="post" action="@Url.Action("ApproveProduct", "Admin")" style="display:inline;">
+                        <input type="hidden" name="id" value="@item.ProductId" />
+                        <button type="submit" class="btn btn-success btn-sm">Onayla</button>
+                    </form>
+                    <form method="post" action="@Url.Action("RejectProduct", "Admin")" style="display:inline;">
+                        <input type="hidden" name="id" value="@item.ProductId" />
+                        <button type="submit" class="btn btn-warning btn-sm">Reddet</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

@@ -1,0 +1,38 @@
+﻿@model List<Yurtlar.Users>
+@{
+    ViewBag.Title = "Users";
+    Layout = "~/Views/Shared/Admin.cshtml";
+}
+<h2>Kullanıcı Listesi</h2>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Ad</th>
+            <th>Soyad</th>
+            <th>Mail</th>
+            <th>Telefon</th>
+            <th>İşlem</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var user in Model)
+        {
+            <tr>
+                <form method="post" action="/Admin/EditUser">
+                <td><input type="text" name="Name" value="@user.Name" /></td>
+                <td><input type="text" name="Surname" value="@user.Surname" /></td>
+                <td><input type="email" name="Mail" value="@user.Mail" /></td>
+                <td><input type="text" name="Phone" value="@user.Phone" /></td>
+                <td>
+                    <input type="hidden" name="UserId" value="@user.UserId" />
+                    <button class="btn btn-sm btn-success">Güncelle</button>
+                    <form method="post" action="/Admin/DeleteUser" style="display:inline;">
+                        <input type="hidden" name="id" value="@user.UserId" />
+                        <button class="btn btn-sm btn-danger">Sil</button>
+                    </form>
+                </td>
+                </form>
+            </tr>
+        }
+    </tbody>
+</table>

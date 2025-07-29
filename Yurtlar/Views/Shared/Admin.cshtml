@@ -72,9 +72,12 @@
     <div class="admin-container">
         <nav class="sidebar">
             <ul>
-                <li><a href="#" class="active"><i class="fas fa-users"></i> Kullanıcılar</a></li>
-                <li><a href="#"><i class="fas fa-check-circle"></i> Onaylar</a></li>
-                <li><a href="#"><i class="fas fa-shopping-cart"></i> Aktif Satışlar</a></li>
+                <li>
+                    <p class="text-white">Hoşgeldin, @Session["AdminName"]</p>
+                </li>
+                <li><a href="@Url.Action("Users", "Admin")" class="active"><i class="fas fa-users"></i> Kullanıcılar</a></li>
+                <li><a href="@Url.Action("Approvals", "Admin")"><i class="fas fa-check-circle"></i> Onaylar</a></li>
+                <li><a href="@Url.Action("ActiveSales", "Admin")"><i class="fas fa-shopping-cart"></i> Aktif Satışlar</a></li>
             </ul>
         </nav>
         <main class="content">
