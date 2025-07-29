@@ -31,31 +31,6 @@
         }
 
     </style>
-
-    <script>
-        $(document).ready(function () {
-            // AJAX ile içerik güncelleme
-            $(".nav-link").on("click", function (e) {
-                e.preventDefault();
-                var url = $(this).attr("href");
-                $(".body-content").fadeOut(200, function () {
-                    $.ajax({
-                        url: url,
-                        type: "GET",
-                        success: function (data) {
-                            $(".body-content").html($(data).find(".body-content").html()).fadeIn(300);
-                        }
-                    });
-                });
-            });
-
-            // Navbar aktif link işaretleme
-            $(".nav-item .nav-link").on("click", function () {
-                $(".nav-item").removeClass("active");
-                $(this).parent().addClass("active");
-            });
-        });
-    </script>
 </head>
 <body>
     <!-- Navbar -->
@@ -64,18 +39,58 @@
             <a class="navbar-brand" href="@Url.Action("Index", "Home")">
                 <i class="fas fa-store"></i> KYK Pazar
             </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                    aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
-                    <li class="nav-item"><a class="nav-link" href="@Url.Action("SatisEkle", "Home")"><i class="fas fa-plus-circle"></i> Satış Ekle</a></li>
-                    <li class="nav-item"><a class="nav-link" href="@Url.Action("UrunleriListele", "Home")"><i class="fas fa-list"></i> Ürünleri Listele</a></li>
-                    <li class="nav-item"><a class="nav-link" href="@Url.Action("OnaySayfam", "Home")"><i class="fas fa-check"></i> Onay Sayfam</a></li>
+                    @if (Session["UserName"] != null)
+                    {
+                        <!-- Giriş yapılmışsa -->
+                        <li class="nav-item">
+                            <span class="nav-link text-warning">Hoş geldin, @Session["UserName"]</span>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="@Url.Action("SatisEkle", "Home")">
+                                <i class="fas fa-plus-circle"></i> Satış Ekle
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="@Url.Action("UrunleriListele", "Home")">
+                                <i class="fas fa-list"></i> Ürünleri Listele
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="@Url.Action("OnaySayfam", "Home")">
+                                <i class="fas fa-check"></i> Onay Sayfam
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="@Url.Action("Logout", "Home")">
+                                <i class="fas fa-sign-out-alt"></i> Çıkış Yap
+                            </a>
+                        </li>
+                    }
+                    else
+                    {
+                        <!-- Giriş yapılmamışsa -->
+                        <li class="nav-item">
+                            <a class="nav-link" href="@Url.Action("Login", "Home")">
+                                <i class="fas fa-sign-in-alt"></i> Giriş Yap
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="@Url.Action("Register", "Home")">
+                                <i class="fas fa-user-plus"></i> Kayıt Ol
+                            </a>
+                        </li>
+                    }
                 </ul>
             </div>
         </div>
     </nav>
+
 
     <!-- İçerik Alanı -->
     <div class="container mt-4 flex-grow-1">

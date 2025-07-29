@@ -1,74 +1,47 @@
-﻿@{
-    ViewBag.Title = "OnaySayfam";
+﻿@model List<Yurtlar.Models.ProductViewModel>
+@{
+    ViewBag.Title = "Onay Sayfam";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<head>
-    <link rel="stylesheet" href="~/Content/custom.css" />
-    <style>
-        /* Navbar yüksekliğine göre içeriği aşağı it */
-        body {
-            padding-top: 80px; /* Navbar yüksekliğine göre ayarla */
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .container {
-            flex: 1;
-        }
-
-        .card {
-            border-radius: 10px;
-            overflow: hidden;
-            transition: transform 0.2s ease-in-out;
-            display: flex;
-            flex-direction: column;
-        }
-
-            .card:hover {
-                transform: scale(1.05);
+<div class="container mt-5">
+    <h2 class="text-center mb-4">Ürün Onay Durumları</h2>
+    <table class="table table-bordered text-center">
+        <thead class="table-dark">
+            <tr>
+                <th>Ürün Adı</th>
+                <th>Açıklama</th>
+                <th>Fiyat</th>
+                <th>Stok</th>
+                <th>Yurt</th>
+                <th>Durum</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var urun in Model)
+            {
+                <tr>
+                    <td>@urun.PName</td>
+                    <td>@urun.PDesc</td>
+                    <td>@urun.PPrice ₺</td>
+                    <td>@urun.PStock</td>
+                    <td>@urun.PKyk</td>
+                    <td>
+                        @if (urun.PStatus == 1)
+                        {
+                            <span class="badge bg-success">Onaylandı</span>
+                        }
+                        else if (urun.PStatus == 0)
+                        {
+                            <span class="badge bg-warning text-dark">Onay Bekliyor</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-danger">Reddedildi</span>
+                        }
+                    </td>
+                </tr>
             }
-
-            .card img {
-                height: 200px;
-                object-fit: cover;
-            }
-    </style>
-</head>
-
-<div class="container d-flex flex-column">
-    <h2 class="text-center my-4">Onay Bekleyen Ürünlerim</h2>
-    <div class="row">
-        <div class="col-md-4 mb-4">
-            <div class="card shadow-sm h-100">
-                <img src="https://via.placeholder.com/300" class="card-img-top" alt="Ürün 1">
-                <div class="card-body text-center">
-                    <h5 class="card-title">Ürün 1</h5>
-                    <p class="text-warning fw-bold">Onay Bekliyor</p>
-                    <p class="text-muted">Ürün açıklaması burada yer alır.</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4 mb-4">
-            <div class="card shadow-sm h-100">
-                <img src="https://via.placeholder.com/300" class="card-img-top" alt="Ürün 2">
-                <div class="card-body text-center">
-                    <h5 class="card-title">Ürün 2</h5>
-                    <p class="text-danger fw-bold">Onaylanmadı</p>
-                    <p class="text-muted">Ürün açıklaması burada yer alır.</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4 mb-4">
-            <div class="card shadow-sm h-100">
-                <img src="https://via.placeholder.com/300" class="card-img-top" alt="Ürün 3">
-                <div class="card-body text-center">
-                    <h5 class="card-title">Ürün 3</h5>
-                    <p class="text-success fw-bold">Onaylandı</p>
-                    <p class="text-muted">Ürün açıklaması burada yer alır.</p>
-                </div>
-            </div>
-        </div>
-    </div>
+        </tbody>
+    </table>
 </div>

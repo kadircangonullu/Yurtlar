@@ -13,17 +13,25 @@
 <body class="flex items-center justify-center min-h-screen bg-gray-100">
     <div class="w-96 shadow-lg rounded-2xl p-6 bg-white">
         <h2 class="text-center text-2xl font-semibold mb-6">KYK Pazar Girişi</h2>
-        <div class="flex flex-col space-y-4">
-            <div class="relative">
-                <span class="absolute left-3 top-3 text-gray-400">👤</span>
-                <input type="text" placeholder="Kullanıcı Adı" class="pl-10 w-full p-2 border rounded" id="username">
+        <form method="post" action="/Home/Login">
+            <div class="flex flex-col space-y-4">
+                <div class="relative">
+                    <span class="absolute left-3 top-3 text-gray-400">👤</span>
+                    <input type="text" name="username" placeholder="Mail Adresi" class="pl-10 w-full p-2 border rounded" id="username">
+                </div>
+                <div class="relative">
+                    <span class="absolute left-3 top-3 text-gray-400">🔒</span>
+                    <input type="password" name="password" placeholder="Şifre" class="pl-10 w-full p-2 border rounded" id="password">
+                </div>
+                <button type="submit" class="w-full bg-blue-600 text-white p-2 rounded hover:bg-blue-700">Giriş Yap</button>
             </div>
-            <div class="relative">
-                <span class="absolute left-3 top-3 text-gray-400">🔒</span>
-                <input type="password" placeholder="Şifre" class="pl-10 w-full p-2 border rounded" id="password">
-            </div>
-            <button class="w-full bg-blue-600 text-white p-2 rounded hover:bg-blue-700" onclick="handleLogin()">Giriş Yap</button>
-        </div>
+            </form>
+        @if(ViewBag.ErrorMessage != null)
+            {
+                <div class="mt-4 text-red-500 text-center">
+                    @ViewBag.ErrorMessage
+                </div>
+            }
     </div>
     <script>
         function handleLogin() {

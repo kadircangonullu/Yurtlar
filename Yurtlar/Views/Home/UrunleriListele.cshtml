@@ -1,4 +1,6 @@
-﻿@{
+﻿@model List<Yurtlar.Models.ProductViewModel>
+
+@{
     ViewBag.Title = "UrunleriListele";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
@@ -11,32 +13,37 @@
                 <tr>
                     <th>Resim</th>
                     <th>Ürün Adı</th>
-                    <th>Ürün Kodu</th>
-                    <th>Fiyat</th>
-                    <th>Adet</th>
-                    <th>Durum</th>
-                    <th>Eylem</th>
+                    <th>Açıklama</th>
+                    <th>Fiyat (₺)</th>
+                    <th>Stok</th>
+                    <th>Yurt</th>
+                    <th>Satıcı Tel</th>
                 </tr>
             </thead>
             <tbody>
-                <tr>
-                    <td><img src="https://via.placeholder.com/50" alt="Ürün 1" class="img-thumbnail"></td>
-                    <td>Apple Cinema 30"</td>
-                    <td>product 20</td>
-                    <td>100.00₺</td>
-                    <td><span class="badge bg-success">995</span></td>
-                    <td><span class="text-success">Açık</span></td>
-                    <td><button class="btn btn-primary btn-sm">Düzenle</button></td>
-                </tr>
-                <tr>
-                    <td><img src="https://via.placeholder.com/50" alt="Ürün 2" class="img-thumbnail"></td>
-                    <td>Canon EOS 5D</td>
-                    <td>SAM1</td>
-                    <td>199.99₺</td>
-                    <td><span class="badge bg-warning">0</span></td>
-                    <td><span class="text-success">Açık</span></td>
-                    <td><button class="btn btn-primary btn-sm">Düzenle</button></td>
-                </tr>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>
+                            @if (item.PImage != null)
+                            {
+                                var base64 = Convert.ToBase64String(item.PImage);
+                                var imgSrc = $"data:image/png;base64,{base64}";
+                                <img src="@imgSrc" alt="Ürün Resmi" class="img-thumbnail" />
+                            }
+                            else
+                            {
+                                <img src="https://via.placeholder.com/50" alt="Yok" class="img-thumbnail" />
+                            }
+                        </td>
+                        <td>@item.PName</td>
+                        <td>@item.PDesc</td>
+                        <td>@item.PPrice ₺</td>
+                        <td><span class="badge bg-success">@item.PStock</span></td>
+                        <td>@item.PKyk</td>
+                        <td>@item.Phone</td>
+                    </tr>
+                }
             </tbody>
         </table>
     </div>
