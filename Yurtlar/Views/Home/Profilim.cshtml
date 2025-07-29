@@ -1,0 +1,177 @@
+﻿@model Yurtlar.Users
+@{
+    ViewBag.Title = "Profilim";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-5">
+    <h2 class="mb-4">Profil Bilgilerim</h2>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success text-center">@TempData["Success"]</div>
+    }
+
+<form method="post" action="/Home/Profilim">
+    <div class="row g-3">
+        <div class="col-md-6">
+            <label>Ad</label>
+            <input type="text" name="Name" value="@Model.Name" class="form-control" required />
+        </div>
+        <div class="col-md-6">
+            <label>Soyad</label>
+            <input type="text" name="Surname" value="@Model.Surname" class="form-control" required />
+        </div>
+        <div class="col-md-6">
+            <label>Telefon</label>
+            <input type="text" name="Phone" value="@Model.Phone" class="form-control" required />
+        </div>
+        <div class="col-md-6">
+            <label>E-posta</label>
+            <input type="email" name="Mail" value="@Model.Mail" class="form-control" required />
+        </div>
+        <div class="col-md-6">
+            <label>Şifre</label>
+            <input type="password" name="Password" value="@Model.Password" class="form-control" required />
+        </div>
+    </div>
+    <div class="text-center mt-3">
+        <button type="submit" class="btn btn-success">Bilgileri Güncelle</button>
+    </div>
+</form>
+
+    <hr />
+    <h3 class="mt-5">Ürünlerim</h3>
+    <table class="table table-bordered" id="productTable">
+        <thead>
+            <tr>
+                <th>Ad</th>
+                <th>Açıklama</th>
+                <th>Fiyat</th>
+                <th>Stok</th>
+                <th>Yurt</th>
+                <th>Durum</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in ViewBag.MyProducts as List<Yurtlar.Product>)
+            {
+                <tr data-id="@item.ProductId">
+                    <td><input class="form-control pname editable" value="@item.PName" readonly /></td>
+                    <td><input class="form-control pdesc editable" value="@item.PDesc" readonly /></td>
+                    <td><input class="form-control pprice editable" type="number" value="@item.PPrice" readonly /></td>
+                    <td><input class="form-control pstock editable" type="number" value="@item.PStock" readonly /></td>
+                    <td><input class="form-control pkyk editable" value="@item.PKyk" readonly /></td>
+                    <td>
+                        @if (item.PStatus == 1)
+                        {
+                            <span class="badge bg-success">Onaylandı</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-secondary">Onay Bekliyor</span>
+                        }
+                    </td>
+                    <td>
+                        <button class="btn btn-sm btn-primary edit-btn">Düzenle</button>
+                        <button class="btn btn-sm btn-success save-btn" style="display:none;">Kaydet</button>
+                        <button class="btn btn-sm btn-danger deleteBtn" data-id="@item.ProductId">Sil</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<!-- Modal (Düzenleme için) -->
+<div class="modal fade" id="editModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form id="editForm">
+                <div class="modal-header"><h5 class="modal-title">Ürünü Düzenle</h5></div>
+                <div class="modal-body">
+                    <input type="hidden" name="ProductId" id="editProductId" />
+                    <div class="mb-2"><label>Ad:</label><input type="text" class="form-control" name="PName" id="editPName" /></div>
+                    <div class="mb-2"><label>Açıklama:</label><textarea class="form-control" name="PDesc" id="editPDesc"></textarea></div>
+                    <div class="mb-2"><label>Fiyat:</label><input type="number" class="form-control" name="PPrice" id="editPPrice" /></div>
+                    <div class="mb-2"><label>Stok:</label><input type="number" class="form-control" name="PStock" id="editPStock" /></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-success">Kaydet</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+    $(document).ready(function () {
+        // Sil
+        $(".deleteBtn").click(function () {
+            var id = $(this).data("id");
+            if (confirm("Bu ürünü silmek istiyor musunuz?")) {
+                $.post("/Home/UrunSil", { id: id }, function (result) {
+                    if (result === "ok") {
+                        $("tr[data-id='" + id + "']").fadeOut();
+                    }
+                });
+            }
+        });
+
+        // Düzenle butonu
+        $(document).ready(function () {
+            $(".edit-btn").click(function () {
+                var row = $(this).closest("tr");
+
+                // Alanları düzenlenebilir yap
+                row.find(".editable").prop("readonly", false);
+                row.find(".save-btn").show();    // Kaydet butonu görünür olsun
+                $(this).hide();                 // Düzenle butonunu gizle
+            });
+
+            $(".save-btn").click(function () {
+                var row = $(this).closest("tr");
+
+                var productId = row.data("id");
+                var pname = row.find(".pname").val();
+                var pdesc = row.find(".pdesc").val();
+                var pprice = row.find(".pprice").val();
+                var pstock = row.find(".pstock").val();
+                var pkyk = row.find(".pkyk").val();
+
+                $.ajax({
+                    url: '@Url.Action("UrunGuncelle", "Home")',
+                    type: 'POST',
+                    data: {
+                        id: productId,
+                        PName: pname,
+                        PDesc: pdesc,
+                        PPrice: pprice,
+                        PStock: pstock,
+                        PKyk: pkyk
+                    },
+                    success: function (result) {
+                        alert("Güncelleme başarılı!");
+                        location.reload();
+                    },
+                    error: function () {
+                        alert("Bir hata oluştu!");
+                    }
+                });
+            });
+        });
+
+        // Düzenleme formu submit
+        $("#editForm").submit(function (e) {
+            e.preventDefault();
+            $.post("/Home/UrunGuncelle", $(this).serialize(), function (result) {
+                if (result === "ok") {
+                    location.reload(); // ya da sadece tabloyu güncelle
+                }
+            });
+        });
+    });
+    </script>
+}

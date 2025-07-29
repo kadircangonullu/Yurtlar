@@ -165,6 +165,7 @@
     <Content Include="Views\Shared\Admin.cshtml" />
     <Content Include="Views\Home\YönetimSayfa.cshtml" />
     <Content Include="Views\Home\Register.cshtml" />
+    <Content Include="Views\Home\Profilim.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

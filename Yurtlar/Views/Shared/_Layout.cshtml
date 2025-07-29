@@ -67,6 +67,9 @@
                             </a>
                         </li>
                         <li class="nav-item">
+                            <a class="nav-link" href="@Url.Action("Profilim", "Home")"><i class="fas fa-user"></i> Profilim</a>
+                        </li>
+                        <li class="nav-item">
                             <a class="nav-link" href="@Url.Action("Logout", "Home")">
                                 <i class="fas fa-sign-out-alt"></i> Çıkış Yap
                             </a>
@@ -103,5 +106,8 @@
     <footer>
         <p>&copy; @DateTime.Now.Year - KYK Pazar | Tüm Hakları Saklıdır.</p>
     </footer>
+
+    @RenderSection("Scripts", required: false)
+
 </body>
 </html>

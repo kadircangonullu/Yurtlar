@@ -128,6 +128,82 @@ namespace Yurtlar.Controllers
             return RedirectToAction("UrunleriListele");
         }
 
+        public ActionResult Profilim()
+        {
+            if (Session["UserId"] == null)
+                return RedirectToAction("Login");
+
+            int userId = (int)Session["UserId"];
+
+            var user = db.Users.Find(userId);
+            var products = db.Product.Where(p => p.UserId == userId).ToList();
+
+            ViewBag.MyProducts = products;
+            return View(user);
+        }
+
+
+        [HttpPost]
+        public ActionResult Profilim(Users updatedUser)
+        {
+            if (Session["UserId"] == null)
+                return RedirectToAction("Login");
+
+            int userId = (int)Session["UserId"];
+            var user = db.Users.Find(userId);
+
+            if (user != null)
+            {
+                user.Name = updatedUser.Name;
+                user.Surname = updatedUser.Surname;
+                user.Phone = updatedUser.Phone;
+                user.Mail = updatedUser.Mail;
+                user.Password = updatedUser.Password;
+
+                db.SaveChanges();
+            }
+
+            return RedirectToAction("Profilim");
+        }
+
+        public JsonResult UrunGetir(int id)
+        {
+            var urun = db.Product.Find(id);
+            return Json(urun, JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpPost]
+        public string UrunSil(int id)
+        {
+            var urun = db.Product.Find(id);
+            if (urun != null)
+            {
+                db.Product.Remove(urun);
+                db.SaveChanges();
+                return "ok";
+            }
+            return "error";
+        }
+
+        [HttpPost]
+        public ActionResult UrunGuncelle(int id, string PName, string PDesc, float PPrice, int PStock, string PKyk)
+        {
+            var product = db.Product.Find(id);
+            if (product == null)
+                return HttpNotFound();
+
+            product.PName = PName;
+            product.PDesc = PDesc;
+            product.PPrice = PPrice;
+            product.PStock = PStock;
+            product.PKyk = PKyk;
+            product.PStatus = 0; // Değiştiği için tekrar onaya düşsün
+
+            db.SaveChanges();
+            return Json(new { success = true });
+        }
+
+
 
 
 
