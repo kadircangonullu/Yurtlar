@@ -164,13 +164,11 @@
         }
         
         .logo {
-            animation: pulse 2s infinite;
+            transition: transform 0.3s ease;
         }
         
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
+        .logo:hover {
+            transform: scale(1.05);
         }
         
         .form-floating > .form-control {
@@ -217,7 +215,7 @@
             color: #764ba2;
         }
         
-        @media (max-width: 991.98px) {
+        @@media (max-width: 991.98px) {
             .login-form-wrapper {
                 margin: 1rem;
                 padding: 2rem;

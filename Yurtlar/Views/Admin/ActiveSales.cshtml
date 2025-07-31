@@ -1,38 +1,398 @@
 ﻿@model List<Yurtlar.Product>
 @{
-    ViewBag.Title = "ActiveSales";
+    ViewBag.Title = "Aktif Satışlar - Admin Panel";
     Layout = "~/Views/Shared/Admin.cshtml";
 }
 
+<div class="page-header bg-gradient-success text-white py-5">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-8 mx-auto text-center">
+                <h1 class="display-5 fw-bold mb-3">
+                    <i class="fas fa-shopping-cart me-3"></i>Aktif Satışlar
+                </h1>
+                <p class="lead mb-0">Sistemde aktif olan ürün satışlarını yönetin</p>
+            </div>
+        </div>
+    </div>
+</div>
 
-<h3>Aktif Ürünler</h3>
-<table class="table table-bordered">
-    <thead class="table-dark">
-        <tr>
-            <th>Ad</th>
-            <th>Açıklama</th>
-            <th>Fiyat</th>
-            <th>Stok</th>
-            <th>Yurt</th>
-            <th>İşlem</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
-            <tr>
-                <td>@item.PName</td>
-                <td>@item.PDesc</td>
-                <td>@item.PPrice ₺</td>
-                <td>@item.PStock</td>
-                <td>@item.PKyk</td>
-                <td>
-                    <form method="post" action="@Url.Action("DeleteProduct", "Admin")">
-                        <input type="hidden" name="id" value="@item.ProductId" />
-                        <button type="submit" class="btn btn-danger btn-sm">Sil</button>
-                    </form>
-                </td>
-            </tr>
+<div class="container py-5">
+    <!-- Stats Cards -->
+    <div class="row mb-4">
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card border-0 shadow-sm text-center">
+                <div class="card-body">
+                    <div class="stats-icon bg-success bg-opacity-10 text-success mb-3">
+                        <i class="fas fa-box fa-2x"></i>
+                    </div>
+                    <h4 class="fw-bold text-success">@Model.Count</h4>
+                    <p class="text-muted mb-0">Aktif Ürün</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card border-0 shadow-sm text-center">
+                <div class="card-body">
+                    <div class="stats-icon bg-primary bg-opacity-10 text-primary mb-3">
+                        <i class="fas fa-lira-sign fa-2x"></i>
+                    </div>
+                    <h4 class="fw-bold text-primary">@Model.Sum(p => p.PPrice) ₺</h4>
+                    <p class="text-muted mb-0">Toplam Değer</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card border-0 shadow-sm text-center">
+                <div class="card-body">
+                    <div class="stats-icon bg-info bg-opacity-10 text-info mb-3">
+                        <i class="fas fa-boxes fa-2x"></i>
+                    </div>
+                    <h4 class="fw-bold text-info">@Model.Sum(p => p.PStock)</h4>
+                    <p class="text-muted mb-0">Toplam Stok</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card border-0 shadow-sm text-center">
+                <div class="card-body">
+                    <div class="stats-icon bg-warning bg-opacity-10 text-warning mb-3">
+                        <i class="fas fa-building fa-2x"></i>
+                    </div>
+                    <h4 class="fw-bold text-warning">@Model.Select(p => p.PKyk).Distinct().Count()</h4>
+                    <p class="text-muted mb-0">Farklı Yurt</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Products Table -->
+    <div class="card border-0 shadow-lg">
+        <div class="card-header bg-white border-0 py-4">
+            <div class="row align-items-center">
+                <div class="col">
+                    <h3 class="card-title mb-0">
+                        <i class="fas fa-list me-2 text-primary"></i>Aktif Ürün Listesi
+                    </h3>
+                </div>
+                <div class="col-auto">
+                    <div class="d-flex gap-2">
+                        <div class="input-group">
+                            <span class="input-group-text bg-white border-end-0">
+                                <i class="fas fa-search text-muted"></i>
+                            </span>
+                            <input type="text" class="form-control border-start-0" id="searchInput" placeholder="Ürün ara...">
+                        </div>
+                        <select class="form-select" id="filterYurt" style="max-width: 150px;">
+                            <option value="">Tüm Yurtlar</option>
+                            @foreach (var yurt in Model.Select(p => p.PKyk).Distinct())
+                            {
+                                <option value="@yurt">@yurt</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0" id="productsTable">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="border-0 ps-4">
+                                <i class="fas fa-tag me-2"></i>Ürün Adı
+                            </th>
+                            <th class="border-0">
+                                <i class="fas fa-align-left me-2"></i>Açıklama
+                            </th>
+                            <th class="border-0">
+                                <i class="fas fa-lira-sign me-2"></i>Fiyat
+                            </th>
+                            <th class="border-0">
+                                <i class="fas fa-boxes me-2"></i>Stok
+                            </th>
+                            <th class="border-0">
+                                <i class="fas fa-building me-2"></i>Yurt
+                            </th>
+                            <th class="border-0">
+                                <i class="fas fa-calendar me-2"></i>Eklenme Tarihi
+                            </th>
+                            <th class="border-0">
+                                <i class="fas fa-cogs me-2"></i>İşlemler
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr class="product-row" data-yurt="@item.PKyk">
+                                <td class="ps-4">
+                                    <div class="d-flex align-items-center">
+                                        <div class="product-icon me-3">
+                                            <i class="fas fa-box text-primary"></i>
+                                        </div>
+                                        <div>
+                                            <h6 class="mb-0 fw-bold">@item.PName</h6>
+                                            <small class="text-muted">ID: @item.ProductId</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="text-truncate" style="max-width: 200px;" title="@item.PDesc">
+                                        @item.PDesc
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="fw-bold text-success">@item.PPrice ₺</span>
+                                </td>
+                                <td>
+                                    @if (item.PStock > 10)
+                                    {
+                                        <span class="badge bg-success">@item.PStock adet</span>
+                                    }
+                                    else if (item.PStock > 0)
+                                    {
+                                        <span class="badge bg-warning text-dark">@item.PStock adet</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-danger">Tükendi</span>
+                                    }
+                                </td>
+                                <td>
+                                    <small class="text-muted">
+                                        <i class="fas fa-building me-1"></i>@item.PKyk
+                                    </small>
+                                </td>
+                                <td>
+                                    <small class="text-muted">@DateTime.Now.ToString("dd.MM.yyyy")</small>
+                                </td>
+                                <td>
+                                    <div class="btn-group btn-group-sm" role="group">
+                                        <button class="btn btn-outline-info" title="Detay" onclick="viewProduct('@item.PName', '@item.PDesc', '@item.PPrice', '@item.PStock', '@item.PKyk')">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button class="btn btn-outline-warning" title="Düzenle">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="btn btn-outline-danger" title="Sil" onclick="deleteProduct(@item.ProductId)">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- No Products Message -->
+    @if (!Model.Any())
+    {
+        <div class="text-center py-5">
+            <i class="fas fa-box-open fa-4x text-muted mb-3"></i>
+            <h4 class="text-muted">Henüz aktif ürün bulunmuyor</h4>
+            <p class="text-muted">Onaylanan ürünler burada görünecek</p>
+        </div>
+    }
+</div>
+
+<!-- Product Detail Modal -->
+<div class="modal fade" id="productModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalTitle"></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div id="modalContent"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Kapat</button>
+                <button type="button" class="btn btn-danger" id="deleteModalBtn">
+                    <i class="fas fa-trash me-2"></i>Ürünü Sil
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .bg-gradient-success {
+        background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    }
+    
+    .stats-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto;
+    }
+    
+    .card {
+        border-radius: 15px;
+        overflow: hidden;
+        transition: transform 0.3s ease;
+    }
+    
+    .card:hover {
+        transform: translateY(-2px);
+    }
+    
+    .product-icon {
+        width: 40px;
+        height: 40px;
+        background: rgba(102, 126, 234, 0.1);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .table th {
+        font-weight: 600;
+        color: #6c757d;
+        border-bottom: 2px solid #e9ecef;
+    }
+    
+    .table td {
+        vertical-align: middle;
+        border-bottom: 1px solid #f8f9fa;
+    }
+    
+    .table tbody tr:hover {
+        background-color: #f8f9fa;
+    }
+    
+    .badge {
+        border-radius: 20px;
+        font-weight: 600;
+        padding: 0.5rem 1rem;
+    }
+    
+    .btn-group .btn {
+        border-radius: 8px;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-group .btn:hover {
+        transform: translateY(-1px);
+    }
+    
+    .form-select {
+        border-radius: 10px;
+        border: 2px solid #e9ecef;
+        transition: all 0.3s ease;
+    }
+    
+    .form-select:focus {
+        border-color: #28a745;
+        box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
+    }
+    
+    .input-group-text {
+        border-radius: 10px 0 0 10px;
+    }
+    
+    .form-control {
+        border-radius: 10px;
+        border: 2px solid #e9ecef;
+        transition: all 0.3s ease;
+    }
+    
+    .form-control:focus {
+        border-color: #28a745;
+        box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
+    }
+    
+    @@media (max-width: 768px) {
+        .btn-group {
+            flex-direction: column;
         }
-    </tbody>
-</table>
+        
+        .btn-group .btn {
+            margin-bottom: 0.25rem;
+        }
+    }
+</style>
+
+<script>
+// Search functionality
+document.getElementById('searchInput').addEventListener('input', function() {
+    const searchTerm = this.value.toLowerCase();
+    const rows = document.querySelectorAll('.product-row');
+    
+    rows.forEach(row => {
+        const name = row.querySelector('h6').textContent.toLowerCase();
+        const description = row.querySelector('td:nth-child(2) div').textContent.toLowerCase();
+        
+        if (name.includes(searchTerm) || description.includes(searchTerm)) {
+            row.style.display = 'table-row';
+        } else {
+            row.style.display = 'none';
+        }
+    });
+});
+
+// Filter by dormitory
+document.getElementById('filterYurt').addEventListener('change', function() {
+    const selectedYurt = this.value;
+    const rows = document.querySelectorAll('.product-row');
+    
+    rows.forEach(row => {
+        const yurt = row.getAttribute('data-yurt');
+        
+        if (selectedYurt === '' || yurt === selectedYurt) {
+            row.style.display = 'table-row';
+        } else {
+            row.style.display = 'none';
+        }
+    });
+});
+
+// View product details
+function viewProduct(name, description, price, stock, yurt) {
+    document.getElementById('modalTitle').textContent = name;
+    document.getElementById('modalContent').innerHTML = `
+        <div class="row">
+            <div class="col-md-6">
+                <h6 class="text-muted">Açıklama</h6>
+                <p>${description}</p>
+            </div>
+            <div class="col-md-6">
+                <h6 class="text-muted">Fiyat</h6>
+                <h4 class="text-success fw-bold">${price} ₺</h4>
+                <h6 class="text-muted mt-3">Stok</h6>
+                <h5 class="text-primary fw-bold">${stock} adet</h5>
+                <h6 class="text-muted mt-3">Yurt</h6>
+                <p class="fw-bold">${yurt}</p>
+            </div>
+        </div>
+    `;
+    new bootstrap.Modal(document.getElementById('productModal')).show();
+}
+
+// Delete product function
+function deleteProduct(productId) {
+    if (confirm('Bu ürünü silmek istiyor musunuz?')) {
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = '@Url.Action("DeleteProduct", "Admin")';
+        
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = 'id';
+        input.value = productId;
+        
+        form.appendChild(input);
+        document.body.appendChild(form);
+        form.submit();
+    }
+}
+</script>

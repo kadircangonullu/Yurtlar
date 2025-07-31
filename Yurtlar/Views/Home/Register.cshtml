@@ -205,13 +205,11 @@
         }
         
         .logo {
-            animation: bounce 2s infinite;
+            transition: transform 0.3s ease;
         }
         
-        @keyframes bounce {
-            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
-            40% { transform: translateY(-10px); }
-            60% { transform: translateY(-5px); }
+        .logo:hover {
+            transform: translateY(-5px);
         }
         
         .form-floating > .form-control {
@@ -263,7 +261,7 @@
             border-color: #11998e;
         }
         
-        @media (max-width: 991.98px) {
+        @@media (max-width: 991.98px) {
             .register-form-wrapper {
                 margin: 1rem;
                 padding: 2rem;
