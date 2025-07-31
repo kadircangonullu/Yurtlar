@@ -1,47 +1,357 @@
 ﻿@model List<Yurtlar.Models.ProductViewModel>
 @{
-    ViewBag.Title = "Onay Sayfam";
+    ViewBag.Title = "Onay Durumları - KYK Pazar";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div class="container mt-5">
-    <h2 class="text-center mb-4">Ürün Onay Durumları</h2>
-    <table class="table table-bordered text-center">
-        <thead class="table-dark">
-            <tr>
-                <th>Ürün Adı</th>
-                <th>Açıklama</th>
-                <th>Fiyat</th>
-                <th>Stok</th>
-                <th>Yurt</th>
-                <th>Durum</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var urun in Model)
-            {
-                <tr>
-                    <td>@urun.PName</td>
-                    <td>@urun.PDesc</td>
-                    <td>@urun.PPrice ₺</td>
-                    <td>@urun.PStock</td>
-                    <td>@urun.PKyk</td>
-                    <td>
-                        @if (urun.PStatus == 1)
-                        {
-                            <span class="badge bg-success">Onaylandı</span>
-                        }
-                        else if (urun.PStatus == 0)
-                        {
-                            <span class="badge bg-warning text-dark">Onay Bekliyor</span>
-                        }
-                        else
-                        {
-                            <span class="badge bg-danger">Reddedildi</span>
-                        }
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
+<div class="page-header bg-gradient-primary text-white py-5">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-8 mx-auto text-center">
+                <h1 class="display-5 fw-bold mb-3">
+                    <i class="fas fa-clipboard-check me-3"></i>Ürün Onay Durumları
+                </h1>
+                <p class="lead mb-0">Eklediğiniz ürünlerin onay durumlarını takip edin</p>
+            </div>
+        </div>
+    </div>
 </div>
+
+<div class="container py-5">
+    <!-- Stats Cards -->
+    <div class="row mb-4">
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card border-0 shadow-sm text-center">
+                <div class="card-body">
+                    <div class="stats-icon bg-success bg-opacity-10 text-success mb-3">
+                        <i class="fas fa-check-circle fa-2x"></i>
+                    </div>
+                    <h4 class="fw-bold text-success">@Model.Count(p => p.PStatus == 1)</h4>
+                    <p class="text-muted mb-0">Onaylanan</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card border-0 shadow-sm text-center">
+                <div class="card-body">
+                    <div class="stats-icon bg-warning bg-opacity-10 text-warning mb-3">
+                        <i class="fas fa-clock fa-2x"></i>
+                    </div>
+                    <h4 class="fw-bold text-warning">@Model.Count(p => p.PStatus == 0)</h4>
+                    <p class="text-muted mb-0">Bekleyen</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card border-0 shadow-sm text-center">
+                <div class="card-body">
+                    <div class="stats-icon bg-danger bg-opacity-10 text-danger mb-3">
+                        <i class="fas fa-times-circle fa-2x"></i>
+                    </div>
+                    <h4 class="fw-bold text-danger">@Model.Count(p => p.PStatus == -1)</h4>
+                    <p class="text-muted mb-0">Reddedilen</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card border-0 shadow-sm text-center">
+                <div class="card-body">
+                    <div class="stats-icon bg-primary bg-opacity-10 text-primary mb-3">
+                        <i class="fas fa-box fa-2x"></i>
+                    </div>
+                    <h4 class="fw-bold text-primary">@Model.Count</h4>
+                    <p class="text-muted mb-0">Toplam</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Products Table -->
+    <div class="card border-0 shadow-lg">
+        <div class="card-header bg-white border-0 py-4">
+            <div class="row align-items-center">
+                <div class="col">
+                    <h3 class="card-title mb-0">
+                        <i class="fas fa-list me-2 text-primary"></i>Ürün Listesi
+                    </h3>
+                </div>
+                <div class="col-auto">
+                    <div class="btn-group" role="group">
+                        <button type="button" class="btn btn-outline-primary btn-sm active" data-filter="all">
+                            Tümü
+                        </button>
+                        <button type="button" class="btn btn-outline-success btn-sm" data-filter="approved">
+                            Onaylanan
+                        </button>
+                        <button type="button" class="btn btn-outline-warning btn-sm" data-filter="pending">
+                            Bekleyen
+                        </button>
+                        <button type="button" class="btn btn-outline-danger btn-sm" data-filter="rejected">
+                            Reddedilen
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="border-0 ps-4">
+                                <i class="fas fa-tag me-2"></i>Ürün Adı
+                            </th>
+                            <th class="border-0">
+                                <i class="fas fa-align-left me-2"></i>Açıklama
+                            </th>
+                            <th class="border-0">
+                                <i class="fas fa-lira-sign me-2"></i>Fiyat
+                            </th>
+                            <th class="border-0">
+                                <i class="fas fa-boxes me-2"></i>Stok
+                            </th>
+                            <th class="border-0">
+                                <i class="fas fa-building me-2"></i>Yurt
+                            </th>
+                            <th class="border-0">
+                                <i class="fas fa-info-circle me-2"></i>Durum
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var urun in Model)
+                        {
+                            <tr class="product-row" data-status="@urun.PStatus">
+                                <td class="ps-4">
+                                    <div class="d-flex align-items-center">
+                                        <div class="product-icon me-3">
+                                            <i class="fas fa-box text-primary"></i>
+                                        </div>
+                                        <div>
+                                            <h6 class="mb-0 fw-bold">@urun.PName</h6>
+                                            <small class="text-muted">ID: @urun.PId</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="text-truncate" style="max-width: 200px;" title="@urun.PDesc">
+                                        @urun.PDesc
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="fw-bold text-primary">@urun.PPrice ₺</span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-secondary">@urun.PStock adet</span>
+                                </td>
+                                <td>
+                                    <small class="text-muted">
+                                        <i class="fas fa-building me-1"></i>@urun.PKyk
+                                    </small>
+                                </td>
+                                <td>
+                                    @if (urun.PStatus == 1)
+                                    {
+                                        <span class="badge bg-success">
+                                            <i class="fas fa-check me-1"></i>Onaylandı
+                                        </span>
+                                    }
+                                    else if (urun.PStatus == 0)
+                                    {
+                                        <span class="badge bg-warning text-dark">
+                                            <i class="fas fa-clock me-1"></i>Onay Bekliyor
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-danger">
+                                            <i class="fas fa-times me-1"></i>Reddedildi
+                                        </span>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- No Products Message -->
+    @if (!Model.Any())
+    {
+        <div class="text-center py-5">
+            <i class="fas fa-inbox fa-4x text-muted mb-3"></i>
+            <h4 class="text-muted">Henüz ürün eklenmemiş</h4>
+            <p class="text-muted">İlk ürününüzü ekleyerek başlayın!</p>
+            <a href="@Url.Action("SatisEkle", "Home")" class="btn btn-primary">
+                <i class="fas fa-plus me-2"></i>Ürün Ekle
+            </a>
+        </div>
+    }
+
+    <!-- Status Info -->
+    <div class="row mt-4">
+        <div class="col-lg-8 mx-auto">
+            <div class="card border-0 bg-light">
+                <div class="card-body p-4">
+                    <h5 class="card-title text-primary mb-3">
+                        <i class="fas fa-info-circle me-2"></i>Onay Süreci Hakkında
+                    </h5>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="status-dot bg-warning me-3"></div>
+                                <div>
+                                    <h6 class="mb-0">Onay Bekliyor</h6>
+                                    <small class="text-muted">Ürününüz inceleniyor</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="status-dot bg-success me-3"></div>
+                                <div>
+                                    <h6 class="mb-0">Onaylandı</h6>
+                                    <small class="text-muted">Ürününüz satışta</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="status-dot bg-danger me-3"></div>
+                                <div>
+                                    <h6 class="mb-0">Reddedildi</h6>
+                                    <small class="text-muted">Ürününüz reddedildi</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .bg-gradient-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+    
+    .stats-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto;
+    }
+    
+    .card {
+        border-radius: 15px;
+        overflow: hidden;
+        transition: transform 0.3s ease;
+    }
+    
+    .card:hover {
+        transform: translateY(-2px);
+    }
+    
+    .product-icon {
+        width: 40px;
+        height: 40px;
+        background: rgba(102, 126, 234, 0.1);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .status-dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+    }
+    
+    .table th {
+        font-weight: 600;
+        color: #6c757d;
+        border-bottom: 2px solid #e9ecef;
+    }
+    
+    .table td {
+        vertical-align: middle;
+        border-bottom: 1px solid #f8f9fa;
+    }
+    
+    .table tbody tr:hover {
+        background-color: #f8f9fa;
+    }
+    
+    .badge {
+        border-radius: 20px;
+        font-weight: 600;
+        padding: 0.5rem 1rem;
+    }
+    
+    .btn-group .btn {
+        border-radius: 10px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-group .btn.active {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-color: #667eea;
+    }
+    
+    .product-row {
+        transition: all 0.3s ease;
+    }
+    
+    .product-row.hidden {
+        display: none;
+    }
+    
+    @media (max-width: 768px) {
+        .btn-group {
+            flex-direction: column;
+        }
+        
+        .btn-group .btn {
+            margin-bottom: 0.25rem;
+        }
+    }
+</style>
+
+<script>
+// Filter functionality
+document.querySelectorAll('[data-filter]').forEach(button => {
+    button.addEventListener('click', function() {
+        // Remove active class from all buttons
+        document.querySelectorAll('[data-filter]').forEach(btn => btn.classList.remove('active'));
+        // Add active class to clicked button
+        this.classList.add('active');
+        
+        const filter = this.getAttribute('data-filter');
+        const rows = document.querySelectorAll('.product-row');
+        
+        rows.forEach(row => {
+            const status = row.getAttribute('data-status');
+            
+            if (filter === 'all') {
+                row.classList.remove('hidden');
+            } else if (filter === 'approved' && status === '1') {
+                row.classList.remove('hidden');
+            } else if (filter === 'pending' && status === '0') {
+                row.classList.remove('hidden');
+            } else if (filter === 'rejected' && status === '-1') {
+                row.classList.remove('hidden');
+            } else {
+                row.classList.add('hidden');
+            }
+        });
+    });
+});
+</script>

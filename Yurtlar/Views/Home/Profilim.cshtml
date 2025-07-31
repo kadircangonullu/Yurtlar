@@ -1,177 +1,423 @@
 ﻿@model Yurtlar.Users
 @{
-    ViewBag.Title = "Profilim";
+    ViewBag.Title = "Profilim - KYK Pazar";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div class="container mt-5">
-    <h2 class="mb-4">Profil Bilgilerim</h2>
+<div class="page-header bg-gradient-primary text-white py-5">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-8 mx-auto text-center">
+                <h1 class="display-5 fw-bold mb-3">
+                    <i class="fas fa-user-circle me-3"></i>Profil Bilgilerim
+                </h1>
+                <p class="lead mb-0">Hesap bilgilerinizi güncelleyin ve ürünlerinizi yönetin</p>
+            </div>
+        </div>
+    </div>
+</div>
 
-    @if (TempData["Success"] != null)
-    {
-        <div class="alert alert-success text-center">@TempData["Success"]</div>
+<div class="container py-5">
+    <div class="row">
+        <!-- Profile Information -->
+        <div class="col-lg-4 mb-4">
+            <div class="card border-0 shadow-lg">
+                <div class="card-header bg-white border-0 py-4">
+                    <h3 class="card-title mb-0">
+                        <i class="fas fa-user-edit me-2 text-primary"></i>Kişisel Bilgiler
+                    </h3>
+                </div>
+                <div class="card-body p-4">
+                    @if (TempData["Success"] != null)
+                    {
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            <i class="fas fa-check-circle me-2"></i>
+                            @TempData["Success"]
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    }
+
+                    <form method="post" action="/Home/Profilim" class="needs-validation" novalidate>
+                        <div class="form-floating mb-3">
+                            <input type="text" name="Name" value="@Model.Name" class="form-control" placeholder="Ad" required />
+                            <label>
+                                <i class="fas fa-user me-2"></i>Ad
+                            </label>
+                            <div class="invalid-feedback">
+                                Lütfen adınızı girin.
+                            </div>
+                        </div>
+                        
+                        <div class="form-floating mb-3">
+                            <input type="text" name="Surname" value="@Model.Surname" class="form-control" placeholder="Soyad" required />
+                            <label>
+                                <i class="fas fa-user me-2"></i>Soyad
+                            </label>
+                            <div class="invalid-feedback">
+                                Lütfen soyadınızı girin.
+                            </div>
+                        </div>
+                        
+                        <div class="form-floating mb-3">
+                            <input type="tel" name="Phone" value="@Model.Phone" class="form-control" placeholder="Telefon" required />
+                            <label>
+                                <i class="fas fa-phone me-2"></i>Telefon
+                            </label>
+                            <div class="invalid-feedback">
+                                Lütfen telefon numaranızı girin.
+                            </div>
+                        </div>
+                        
+                        <div class="form-floating mb-3">
+                            <input type="email" name="Mail" value="@Model.Mail" class="form-control" placeholder="E-posta" required />
+                            <label>
+                                <i class="fas fa-envelope me-2"></i>E-posta
+                            </label>
+                            <div class="invalid-feedback">
+                                Lütfen geçerli bir e-posta adresi girin.
+                            </div>
+                        </div>
+                        
+                        <div class="form-floating mb-4">
+                            <input type="password" name="Password" value="@Model.Password" class="form-control" placeholder="Şifre" required />
+                            <label>
+                                <i class="fas fa-lock me-2"></i>Şifre
+                            </label>
+                            <div class="invalid-feedback">
+                                Lütfen şifrenizi girin.
+                            </div>
+                        </div>
+                        
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-save me-2"></i>Bilgileri Güncelle
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- My Products -->
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-lg">
+                <div class="card-header bg-white border-0 py-4">
+                    <div class="row align-items-center">
+                        <div class="col">
+                            <h3 class="card-title mb-0">
+                                <i class="fas fa-box me-2 text-primary"></i>Ürünlerim
+                            </h3>
+                        </div>
+                        <div class="col-auto">
+                            <a href="@Url.Action("SatisEkle", "Home")" class="btn btn-primary btn-sm">
+                                <i class="fas fa-plus me-2"></i>Yeni Ürün Ekle
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0" id="productTable">
+                            <thead class="table-light">
+                                <tr>
+                                    <th class="border-0 ps-4">
+                                        <i class="fas fa-tag me-2"></i>Ürün Adı
+                                    </th>
+                                    <th class="border-0">
+                                        <i class="fas fa-align-left me-2"></i>Açıklama
+                                    </th>
+                                    <th class="border-0">
+                                        <i class="fas fa-lira-sign me-2"></i>Fiyat
+                                    </th>
+                                    <th class="border-0">
+                                        <i class="fas fa-boxes me-2"></i>Stok
+                                    </th>
+                                    <th class="border-0">
+                                        <i class="fas fa-building me-2"></i>Yurt
+                                    </th>
+                                    <th class="border-0">
+                                        <i class="fas fa-info-circle me-2"></i>Durum
+                                    </th>
+                                    <th class="border-0">
+                                        <i class="fas fa-cogs me-2"></i>İşlemler
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in ViewBag.MyProducts as List<Yurtlar.Product>)
+                                {
+                                    <tr data-id="@item.ProductId" class="product-row">
+                                        <td class="ps-4">
+                                            <div class="d-flex align-items-center">
+                                                <div class="product-icon me-3">
+                                                    <i class="fas fa-box text-primary"></i>
+                                                </div>
+                                                <div>
+                                                    <h6 class="mb-0 fw-bold pname-display">@item.PName</h6>
+                                                    <input class="form-control pname editable d-none" value="@item.PName" />
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="pdesc-display">@item.PDesc</div>
+                                            <input class="form-control pdesc editable d-none" value="@item.PDesc" />
+                                        </td>
+                                        <td>
+                                            <span class="fw-bold text-primary pprice-display">@item.PPrice ₺</span>
+                                            <input class="form-control pprice editable d-none" type="number" value="@item.PPrice" />
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-secondary pstock-display">@item.PStock adet</span>
+                                            <input class="form-control pstock editable d-none" type="number" value="@item.PStock" />
+                                        </td>
+                                        <td>
+                                            <small class="text-muted pkyk-display">
+                                                <i class="fas fa-building me-1"></i>@item.PKyk
+                                            </small>
+                                            <input class="form-control pkyk editable d-none" value="@item.PKyk" />
+                                        </td>
+                                        <td>
+                                            @if (item.PStatus == 1)
+                                            {
+                                                <span class="badge bg-success">
+                                                    <i class="fas fa-check me-1"></i>Onaylandı
+                                                </span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-warning text-dark">
+                                                    <i class="fas fa-clock me-1"></i>Onay Bekliyor
+                                                </span>
+                                            }
+                                        </td>
+                                        <td>
+                                            <div class="btn-group btn-group-sm" role="group">
+                                                <button class="btn btn-outline-primary edit-btn" title="Düzenle">
+                                                    <i class="fas fa-edit"></i>
+                                                </button>
+                                                <button class="btn btn-outline-success save-btn d-none" title="Kaydet">
+                                                    <i class="fas fa-save"></i>
+                                                </button>
+                                                <button class="btn btn-outline-danger deleteBtn" data-id="@item.ProductId" title="Sil">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    @if (!(ViewBag.MyProducts as List<Yurtlar.Product>).Any())
+                    {
+                        <div class="text-center py-5">
+                            <i class="fas fa-box-open fa-4x text-muted mb-3"></i>
+                            <h4 class="text-muted">Henüz ürün eklenmemiş</h4>
+                            <p class="text-muted">İlk ürününüzü ekleyerek başlayın!</p>
+                            <a href="@Url.Action("SatisEkle", "Home")" class="btn btn-primary">
+                                <i class="fas fa-plus me-2"></i>Ürün Ekle
+                            </a>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .bg-gradient-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     }
+    
+    .card {
+        border-radius: 15px;
+        overflow: hidden;
+    }
+    
+    .form-floating > .form-control {
+        border-radius: 10px;
+        border: 2px solid #e9ecef;
+        transition: all 0.3s ease;
+    }
+    
+    .form-floating > .form-control:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+    }
+    
+    .btn-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        border-radius: 10px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+    }
+    
+    .product-icon {
+        width: 40px;
+        height: 40px;
+        background: rgba(102, 126, 234, 0.1);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .table th {
+        font-weight: 600;
+        color: #6c757d;
+        border-bottom: 2px solid #e9ecef;
+    }
+    
+    .table td {
+        vertical-align: middle;
+        border-bottom: 1px solid #f8f9fa;
+    }
+    
+    .table tbody tr:hover {
+        background-color: #f8f9fa;
+    }
+    
+    .badge {
+        border-radius: 20px;
+        font-weight: 600;
+        padding: 0.5rem 1rem;
+    }
+    
+    .btn-group .btn {
+        border-radius: 8px;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-group .btn:hover {
+        transform: translateY(-1px);
+    }
+    
+    .editable {
+        border-radius: 8px;
+        border: 2px solid #e9ecef;
+        transition: all 0.3s ease;
+    }
+    
+    .editable:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+    }
+    
+    .alert {
+        border-radius: 10px;
+        border: none;
+    }
+    
+    @media (max-width: 768px) {
+        .btn-group {
+            flex-direction: column;
+        }
+        
+        .btn-group .btn {
+            margin-bottom: 0.25rem;
+        }
+    }
+</style>
 
-<form method="post" action="/Home/Profilim">
-    <div class="row g-3">
-        <div class="col-md-6">
-            <label>Ad</label>
-            <input type="text" name="Name" value="@Model.Name" class="form-control" required />
-        </div>
-        <div class="col-md-6">
-            <label>Soyad</label>
-            <input type="text" name="Surname" value="@Model.Surname" class="form-control" required />
-        </div>
-        <div class="col-md-6">
-            <label>Telefon</label>
-            <input type="text" name="Phone" value="@Model.Phone" class="form-control" required />
-        </div>
-        <div class="col-md-6">
-            <label>E-posta</label>
-            <input type="email" name="Mail" value="@Model.Mail" class="form-control" required />
-        </div>
-        <div class="col-md-6">
-            <label>Şifre</label>
-            <input type="password" name="Password" value="@Model.Password" class="form-control" required />
-        </div>
-    </div>
-    <div class="text-center mt-3">
-        <button type="submit" class="btn btn-success">Bilgileri Güncelle</button>
-    </div>
-</form>
-
-    <hr />
-    <h3 class="mt-5">Ürünlerim</h3>
-    <table class="table table-bordered" id="productTable">
-        <thead>
-            <tr>
-                <th>Ad</th>
-                <th>Açıklama</th>
-                <th>Fiyat</th>
-                <th>Stok</th>
-                <th>Yurt</th>
-                <th>Durum</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in ViewBag.MyProducts as List<Yurtlar.Product>)
-            {
-                <tr data-id="@item.ProductId">
-                    <td><input class="form-control pname editable" value="@item.PName" readonly /></td>
-                    <td><input class="form-control pdesc editable" value="@item.PDesc" readonly /></td>
-                    <td><input class="form-control pprice editable" type="number" value="@item.PPrice" readonly /></td>
-                    <td><input class="form-control pstock editable" type="number" value="@item.PStock" readonly /></td>
-                    <td><input class="form-control pkyk editable" value="@item.PKyk" readonly /></td>
-                    <td>
-                        @if (item.PStatus == 1)
-                        {
-                            <span class="badge bg-success">Onaylandı</span>
-                        }
-                        else
-                        {
-                            <span class="badge bg-secondary">Onay Bekliyor</span>
-                        }
-                    </td>
-                    <td>
-                        <button class="btn btn-sm btn-primary edit-btn">Düzenle</button>
-                        <button class="btn btn-sm btn-success save-btn" style="display:none;">Kaydet</button>
-                        <button class="btn btn-sm btn-danger deleteBtn" data-id="@item.ProductId">Sil</button>
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
-</div>
-
-<!-- Modal (Düzenleme için) -->
-<div class="modal fade" id="editModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <form id="editForm">
-                <div class="modal-header"><h5 class="modal-title">Ürünü Düzenle</h5></div>
-                <div class="modal-body">
-                    <input type="hidden" name="ProductId" id="editProductId" />
-                    <div class="mb-2"><label>Ad:</label><input type="text" class="form-control" name="PName" id="editPName" /></div>
-                    <div class="mb-2"><label>Açıklama:</label><textarea class="form-control" name="PDesc" id="editPDesc"></textarea></div>
-                    <div class="mb-2"><label>Fiyat:</label><input type="number" class="form-control" name="PPrice" id="editPPrice" /></div>
-                    <div class="mb-2"><label>Stok:</label><input type="number" class="form-control" name="PStock" id="editPStock" /></div>
-                </div>
-                <div class="modal-footer">
-                    <button type="submit" class="btn btn-success">Kaydet</button>
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-
-@section Scripts {
-    <script>
-    $(document).ready(function () {
-        // Sil
-        $(".deleteBtn").click(function () {
-            var id = $(this).data("id");
-            if (confirm("Bu ürünü silmek istiyor musunuz?")) {
-                $.post("/Home/UrunSil", { id: id }, function (result) {
-                    if (result === "ok") {
-                        $("tr[data-id='" + id + "']").fadeOut();
+<script>
+$(document).ready(function () {
+    // Form validation
+    (function() {
+        'use strict';
+        window.addEventListener('load', function() {
+            var forms = document.getElementsByClassName('needs-validation');
+            var validation = Array.prototype.filter.call(forms, function(form) {
+                form.addEventListener('submit', function(event) {
+                    if (form.checkValidity() === false) {
+                        event.preventDefault();
+                        event.stopPropagation();
                     }
-                });
-            }
-        });
-
-        // Düzenle butonu
-        $(document).ready(function () {
-            $(".edit-btn").click(function () {
-                var row = $(this).closest("tr");
-
-                // Alanları düzenlenebilir yap
-                row.find(".editable").prop("readonly", false);
-                row.find(".save-btn").show();    // Kaydet butonu görünür olsun
-                $(this).hide();                 // Düzenle butonunu gizle
+                    form.classList.add('was-validated');
+                }, false);
             });
+        }, false);
+    })();
 
-            $(".save-btn").click(function () {
-                var row = $(this).closest("tr");
-
-                var productId = row.data("id");
-                var pname = row.find(".pname").val();
-                var pdesc = row.find(".pdesc").val();
-                var pprice = row.find(".pprice").val();
-                var pstock = row.find(".pstock").val();
-                var pkyk = row.find(".pkyk").val();
-
-                $.ajax({
-                    url: '@Url.Action("UrunGuncelle", "Home")',
-                    type: 'POST',
-                    data: {
-                        id: productId,
-                        PName: pname,
-                        PDesc: pdesc,
-                        PPrice: pprice,
-                        PStock: pstock,
-                        PKyk: pkyk
-                    },
-                    success: function (result) {
-                        alert("Güncelleme başarılı!");
-                        location.reload();
-                    },
-                    error: function () {
-                        alert("Bir hata oluştu!");
-                    }
-                });
-            });
-        });
-
-        // Düzenleme formu submit
-        $("#editForm").submit(function (e) {
-            e.preventDefault();
-            $.post("/Home/UrunGuncelle", $(this).serialize(), function (result) {
+    // Delete product
+    $(".deleteBtn").click(function () {
+        var id = $(this).data("id");
+        if (confirm("Bu ürünü silmek istiyor musunuz?")) {
+            $.post("/Home/UrunSil", { id: id }, function (result) {
                 if (result === "ok") {
-                    location.reload(); // ya da sadece tabloyu güncelle
+                    $("tr[data-id='" + id + "']").fadeOut();
                 }
             });
+        }
+    });
+
+    // Edit button
+    $(".edit-btn").click(function () {
+        var row = $(this).closest("tr");
+        
+        // Show editable fields
+        row.find(".editable").removeClass("d-none");
+        row.find(".pname-display, .pdesc-display, .pprice-display, .pstock-display, .pkyk-display").addClass("d-none");
+        
+        // Show save button, hide edit button
+        row.find(".save-btn").removeClass("d-none");
+        $(this).addClass("d-none");
+    });
+
+    // Save button
+    $(".save-btn").click(function () {
+        var row = $(this).closest("tr");
+        var productId = row.data("id");
+        var pname = row.find(".pname").val();
+        var pdesc = row.find(".pdesc").val();
+        var pprice = row.find(".pprice").val();
+        var pstock = row.find(".pstock").val();
+        var pkyk = row.find(".pkyk").val();
+
+        $.ajax({
+            url: '@Url.Action("UrunGuncelle", "Home")',
+            type: 'POST',
+            data: {
+                id: productId,
+                PName: pname,
+                PDesc: pdesc,
+                PPrice: pprice,
+                PStock: pstock,
+                PKyk: pkyk
+            },
+            success: function (result) {
+                // Update display values
+                row.find(".pname-display").text(pname);
+                row.find(".pdesc-display").text(pdesc);
+                row.find(".pprice-display").text(pprice + " ₺");
+                row.find(".pstock-display").text(pstock + " adet");
+                row.find(".pkyk-display").html('<i class="fas fa-building me-1"></i>' + pkyk);
+                
+                // Hide editable fields
+                row.find(".editable").addClass("d-none");
+                row.find(".pname-display, .pdesc-display, .pprice-display, .pstock-display, .pkyk-display").removeClass("d-none");
+                
+                // Show edit button, hide save button
+                row.find(".edit-btn").removeClass("d-none");
+                row.find(".save-btn").addClass("d-none");
+                
+                // Show success message
+                $('<div class="alert alert-success alert-dismissible fade show" role="alert">' +
+                  '<i class="fas fa-check-circle me-2"></i>Ürün başarıyla güncellendi!' +
+                  '<button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>')
+                  .insertAfter('.card-header');
+            },
+            error: function () {
+                alert("Bir hata oluştu!");
+            }
         });
     });
-    </script>
-}
+});
+</script>
