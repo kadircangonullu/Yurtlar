@@ -10,83 +10,390 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@ViewBag.Title - KYK Pazar Yönetim</title>
 
-    <!-- Bootstrap -->
+    <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-
-    <!-- Google Fonts & FontAwesome -->
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
-    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
-
-    <!-- jQuery & Bootstrap -->
+    
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- jQuery -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    
+    <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
-    <link rel="stylesheet" href="~/Content/custom.css" />
-
     <style>
+        * {
+            font-family: 'Poppins', sans-serif;
+        }
+        
         body {
-            display: flex;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
             min-height: 100vh;
             margin: 0;
+            overflow-x: hidden;
         }
-
-        .admin-container {
+        
+        .admin-wrapper {
             display: flex;
-            width: 100%;
-        }
-
-        .sidebar {
-            width: 250px;
-            background-color: #343a40;
-            color: white;
-            padding-top: 20px;
             min-height: 100vh;
         }
-
-            .sidebar ul {
-                list-style: none;
-                padding: 0;
+        
+        /* Sidebar Styles */
+        .sidebar {
+            width: 280px;
+            background: linear-gradient(180deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            z-index: 1000;
+            transition: all 0.3s ease;
+            box-shadow: 4px 0 10px rgba(0,0,0,0.1);
+        }
+        
+        .sidebar-header {
+            padding: 2rem 1.5rem;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            text-align: center;
+        }
+        
+        .admin-logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #ecf0f1;
+            margin-bottom: 0.5rem;
+        }
+        
+        .admin-subtitle {
+            font-size: 0.875rem;
+            color: #bdc3c7;
+            margin: 0;
+        }
+        
+        .sidebar-nav {
+            padding: 1rem 0;
+        }
+        
+        .nav-item {
+            margin: 0.25rem 1rem;
+        }
+        
+        .nav-link {
+            color: #ecf0f1 !important;
+            padding: 1rem 1.5rem;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        .nav-link:hover {
+            background: rgba(255,255,255,0.1);
+            color: #ffffff !important;
+            transform: translateX(5px);
+        }
+        
+        .nav-link.active {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            color: #ffffff !important;
+            box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3);
+        }
+        
+        .nav-link i {
+            width: 20px;
+            margin-right: 12px;
+            font-size: 1.1rem;
+        }
+        
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: 280px;
+            min-height: 100vh;
+            background: #f8f9fa;
+            transition: all 0.3s ease;
+        }
+        
+        .top-navbar {
+            background: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 999;
+        }
+        
+        .page-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin: 0;
+        }
+        
+        .admin-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .admin-avatar {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+        }
+        
+        .admin-details {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .admin-name {
+            font-weight: 600;
+            color: #2c3e50;
+            margin: 0;
+            font-size: 0.9rem;
+        }
+        
+        .admin-role {
+            color: #7f8c8d;
+            margin: 0;
+            font-size: 0.8rem;
+        }
+        
+        .content-area {
+            padding: 2rem;
+            min-height: calc(100vh - 80px);
+        }
+        
+        /* Responsive Design */
+        .sidebar-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: #2c3e50;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+        
+        @@media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                width: 100%;
+                max-width: 300px;
             }
-
-                .sidebar ul li {
-                    padding: 15px;
-                }
-
-                    .sidebar ul li a {
-                        color: white;
-                        text-decoration: none;
-                        display: block;
-                    }
-
-                        .sidebar ul li a:hover, .sidebar ul li .active {
-                            background-color: #495057;
-                        }
-
-        .content {
-            flex-grow: 1;
-            padding: 20px;
+            
+            .sidebar.show {
+                transform: translateX(0);
+            }
+            
+            .main-content {
+                margin-left: 0;
+            }
+            
+            .sidebar-toggle {
+                display: block;
+            }
+            
+            .content-area {
+                padding: 1rem;
+            }
+        }
+        
+        /* Scrollbar Styling */
+        .sidebar::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .sidebar::-webkit-scrollbar-track {
+            background: rgba(255,255,255,0.1);
+        }
+        
+        .sidebar::-webkit-scrollbar-thumb {
+            background: rgba(255,255,255,0.3);
+            border-radius: 3px;
+        }
+        
+        .sidebar::-webkit-scrollbar-thumb:hover {
+            background: rgba(255,255,255,0.5);
+        }
+        
+        /* Animation Classes */
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+        
+        @@keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Card Enhancements */
+        .card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+        }
+        
+        /* Button Enhancements */
+        .btn {
+            border-radius: 10px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .btn:hover {
+            transform: translateY(-1px);
+        }
+        
+        /* Table Enhancements */
+        .table {
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        .table th {
+            background: #f8f9fa;
+            border: none;
+            font-weight: 600;
+            color: #495057;
         }
     </style>
 </head>
 <body>
-    <div class="admin-container">
-        <nav class="sidebar">
-            <ul>
-                <li>
-                    <p class="text-white">Hoşgeldin, @Session["AdminName"]</p>
-                </li>
-                <li><a href="@Url.Action("Users", "Admin")" class="active"><i class="fas fa-users"></i> Kullanıcılar</a></li>
-                <li><a href="@Url.Action("Approvals", "Admin")"><i class="fas fa-check-circle"></i> Onaylar</a></li>
-                <li><a href="@Url.Action("ActiveSales", "Admin")"><i class="fas fa-shopping-cart"></i> Aktif Satışlar</a></li>
-            </ul>
+    <div class="admin-wrapper">
+        <!-- Sidebar -->
+        <nav class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="admin-logo">
+                    <i class="fas fa-shield-alt me-2"></i>Admin Panel
+                </div>
+                <p class="admin-subtitle">KYK Pazar Yönetimi</p>
+            </div>
+            
+            <div class="sidebar-nav">
+                <div class="nav-item">
+                    <a href="@Url.Action("Users", "Admin")" class="nav-link @(ViewContext.RouteData.Values["Action"].ToString() == "Users" ? "active" : "")">
+                        <i class="fas fa-users"></i>
+                        <span>Kullanıcı Yönetimi</span>
+                    </a>
+                </div>
+                
+                <div class="nav-item">
+                    <a href="@Url.Action("Approvals", "Admin")" class="nav-link @(ViewContext.RouteData.Values["Action"].ToString() == "Approvals" ? "active" : "")">
+                        <i class="fas fa-clipboard-check"></i>
+                        <span>Ürün Onayları</span>
+                    </a>
+                </div>
+                
+                <div class="nav-item">
+                    <a href="@Url.Action("ActiveSales", "Admin")" class="nav-link @(ViewContext.RouteData.Values["Action"].ToString() == "ActiveSales" ? "active" : "")">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span>Aktif Satışlar</span>
+                    </a>
+                </div>
+                
+                <hr style="border-color: rgba(255,255,255,0.1); margin: 2rem 1rem;">
+                
+                <div class="nav-item">
+                    <a href="@Url.Action("Index", "Home")" class="nav-link">
+                        <i class="fas fa-home"></i>
+                        <span>Ana Sayfa</span>
+                    </a>
+                </div>
+                
+                <div class="nav-item">
+                    <a href="@Url.Action("Logout", "Admin")" class="nav-link">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>Çıkış Yap</span>
+                    </a>
+                </div>
+            </div>
         </nav>
-        <main class="content">
-            <h1>@ViewBag.Title - Yönetim Paneli</h1>
-            <div class="body-content">
+        
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Top Navbar -->
+            <div class="top-navbar">
+                <div class="d-flex align-items-center">
+                    <button class="sidebar-toggle me-3" id="sidebarToggle">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <h1 class="page-title">@ViewBag.Title</h1>
+                </div>
+                
+                <div class="admin-info">
+                    <div class="admin-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="admin-details">
+                        <p class="admin-name">@Session["AdminName"]</p>
+                        <p class="admin-role">Sistem Yöneticisi</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Content Area -->
+            <div class="content-area fade-in">
                 @RenderBody()
             </div>
-        </main>
+        </div>
     </div>
+    
+    <script>
+        // Sidebar toggle functionality
+        document.getElementById('sidebarToggle').addEventListener('click', function() {
+            document.getElementById('sidebar').classList.toggle('show');
+        });
+        
+        // Close sidebar when clicking outside on mobile
+        document.addEventListener('click', function(event) {
+            const sidebar = document.getElementById('sidebar');
+            const sidebarToggle = document.getElementById('sidebarToggle');
+            
+            if (window.innerWidth <= 768) {
+                if (!sidebar.contains(event.target) && !sidebarToggle.contains(event.target)) {
+                    sidebar.classList.remove('show');
+                }
+            }
+        });
+        
+        // Active link highlighting
+        const currentPath = window.location.pathname;
+        const navLinks = document.querySelectorAll('.nav-link');
+        
+        navLinks.forEach(link => {
+            if (link.getAttribute('href') === currentPath) {
+                link.classList.add('active');
+            }
+        });
+        
+        // Add loading animation
+        document.addEventListener('DOMContentLoaded', function() {
+            const contentArea = document.querySelector('.content-area');
+            contentArea.classList.add('fade-in');
+        });
+    </script>
 </body>
 </html>
 
