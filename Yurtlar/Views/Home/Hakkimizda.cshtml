@@ -1,0 +1,136 @@
+﻿
+@{
+    ViewBag.Title = "Hakkimizda";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container py-5">
+    <div class="row">
+        <div class="col-12">
+            <div class="text-center mb-5">
+                <h1 class="display-4 fw-bold text-primary mb-3">
+                    <i class="fas fa-info-circle me-3"></i>Hakkımızda
+                </h1>
+                <p class="lead text-muted">KYK Pazar'ın hikayesi ve misyonu</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Misyon Kartı -->
+        <div class="col-lg-4 col-md-6">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body text-center p-4">
+                    <div class="mb-3">
+                        <i class="fas fa-bullseye fa-3x text-primary"></i>
+                    </div>
+                    <h4 class="card-title fw-bold text-primary mb-3">Misyonumuz</h4>
+                    <p class="card-text text-muted">
+                        KYK öğrencilerinin ihtiyaçlarını karşılamak için güvenli,
+                        kolay ve ekonomik bir alışveriş platformu sunmak.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Vizyon Kartı -->
+        <div class="col-lg-4 col-md-6">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body text-center p-4">
+                    <div class="mb-3">
+                        <i class="fas fa-eye fa-3x text-warning"></i>
+                    </div>
+                    <h4 class="card-title fw-bold text-warning mb-3">Vizyonumuz</h4>
+                    <p class="card-text text-muted">
+                        Türkiye'nin en güvenilir öğrenci alışveriş platformu olmak.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Değerler Kartı -->
+        <div class="col-lg-4 col-md-6">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body text-center p-4">
+                    <div class="mb-3">
+                        <i class="fas fa-heart fa-3x text-danger"></i>
+                    </div>
+                    <h4 class="card-title fw-bold text-danger mb-3">Değerlerimiz</h4>
+                    <p class="card-text text-muted">
+                        Güvenlik, şeffaflık, dayanışma ve öğrenci odaklılık.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hikayemiz Bölümü -->
+    <div class="row mt-5">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-5">
+                    <div class="row align-items-center">
+                        <div class="col-lg-6">
+                            <h3 class="fw-bold text-primary mb-4">
+                                <i class="fas fa-book-open me-2"></i>Hikayemiz
+                            </h3>
+                            <p class="text-muted mb-4">
+                                KYK Pazar, 2024 yılında öğrencilerin ihtiyaçlarından yola çıkarak kuruldu.
+                                KYK yurtlarında kalan öğrencilerin birbirleriyle güvenli bir şekilde
+                                alışveriş yapabilmeleri için tasarlanan platform.
+                            </p>
+                            <div class="d-flex align-items-center">
+                                <div class="me-4">
+                                    <h4 class="fw-bold text-primary mb-0">1000+</h4>
+                                    <small class="text-muted">Aktif Kullanıcı</small>
+                                </div>
+                                <div class="me-4">
+                                    <h4 class="fw-bold text-warning mb-0">5000+</h4>
+                                    <small class="text-muted">Başarılı Satış</small>
+                                </div>
+                                <div>
+                                    <h4 class="fw-bold text-success mb-0">%99</h4>
+                                    <small class="text-muted">Müşteri Memnuniyeti</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6 text-center">
+                            <div class="position-relative">
+                                <div class="bg-primary bg-opacity-10 rounded-circle p-5 d-inline-block">
+                                    <i class="fas fa-store fa-5x text-primary"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .card {
+        transition: all 0.3s ease;
+    }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15) !important;
+        }
+
+    .bg-opacity-10 {
+        background-color: rgba(var(--bs-primary-rgb), 0.1) !important;
+    }
+
+    .bg-warning.bg-opacity-10 {
+        background-color: rgba(255, 107, 53, 0.1) !important;
+    }
+
+    .bg-success.bg-opacity-10 {
+        background-color: rgba(40, 167, 69, 0.1) !important;
+    }
+
+    .bg-info.bg-opacity-10 {
+        background-color: rgba(23, 162, 184, 0.1) !important;
+    }
+</style> 
