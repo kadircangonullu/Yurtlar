@@ -131,6 +131,9 @@
                                 <i class="fas fa-calendar me-2"></i>Eklenme Tarihi
                             </th>
                             <th class="border-0">
+                                <i class="fas fa-robot me-2"></i>AI Durumu
+                            </th>
+                            <th class="border-0">
                                 <i class="fas fa-cogs me-2"></i>İşlemler
                             </th>
                         </tr>
@@ -184,10 +187,28 @@
                                     <small class="text-muted">@DateTime.Now.ToString("dd.MM.yyyy")</small>
                                 </td>
                                 <td>
+                                    <div class="d-flex align-items-center">
+                                        <i class="@item.AIDecisionIcon me-2"></i>
+                                        <span class="@item.AIStatusClass small fw-bold">@item.AIStatusText</span>
+                                    </div>
+                                    @if (!string.IsNullOrEmpty(item.AIReason))
+                                    {
+                                        <small class="text-muted d-block" title="@item.AIReason">
+                                            @(item.AIReason.Length > 30 ? item.AIReason.Substring(0, 30) + "..." : item.AIReason)
+                                        </small>
+                                    }
+                                </td>
+                                <td>
                                     <div class="btn-group btn-group-sm" role="group">
-                                        <button class="btn btn-outline-info" title="Detay" onclick="viewProduct('@item.PName', '@item.PDesc', '@item.PPrice', '@item.PStock', '@item.PKyk')">
+                                        <button class="btn btn-outline-info" title="Detay" onclick="viewProduct('@item.PName', '@item.PDesc', '@item.PPrice', '@item.PStock', '@item.PKyk', '@item.AIReason')">
                                             <i class="fas fa-eye"></i>
                                         </button>
+                                        @if (item.RequiresManualReview || item.AIApproved.HasValue)
+                                        {
+                                            <button class="btn btn-outline-warning" title="AI Kararını Geçersiz Kıl" onclick="overrideAIDecision(@item.ProductId)">
+                                                <i class="fas fa-undo"></i>
+                                            </button>
+                                        }
                                         <button class="btn btn-outline-success" title="Onayla" onclick="approveProduct(@item.ProductId)">
                                             <i class="fas fa-check"></i>
                                         </button>
@@ -234,6 +255,35 @@
                 <button type="button" class="btn btn-danger" id="rejectModalBtn">
                     <i class="fas fa-times me-2"></i>Reddet
                 </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- AI Override Modal -->
+<div class="modal fade" id="overrideModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-undo me-2 text-warning"></i>AI Kararını Geçersiz Kıl
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Bu ürün için AI kararını geçersiz kılmak istiyor musunuz?</p>
+                <div class="mb-3">
+                    <label for="overrideReason" class="form-label">Sebep (Opsiyonel):</label>
+                    <textarea class="form-control" id="overrideReason" rows="3" placeholder="AI kararını geçersiz kılma sebebinizi yazın..."></textarea>
+                </div>
+                <div class="d-flex gap-2">
+                    <button type="button" class="btn btn-success flex-fill" onclick="confirmOverride('approve')">
+                        <i class="fas fa-check me-2"></i>Onayla
+                    </button>
+                    <button type="button" class="btn btn-danger flex-fill" onclick="confirmOverride('reject')">
+                        <i class="fas fa-times me-2"></i>Reddet
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -389,8 +439,23 @@ document.getElementById('filterYurt').addEventListener('change', function() {
 });
 
 // View product details
-function viewProduct(name, description, price, stock, yurt) {
+function viewProduct(name, description, price, stock, yurt, aiReason) {
     document.getElementById('modalTitle').textContent = name;
+    
+    let aiSection = '';
+    if (aiReason && aiReason.trim() !== '') {
+        aiSection = `
+            <div class="col-12 mt-3">
+                <div class="alert alert-info">
+                    <h6 class="text-muted">
+                        <i class="fas fa-robot me-2"></i>AI Kararı
+                    </h6>
+                    <p class="mb-0">${aiReason}</p>
+                </div>
+            </div>
+        `;
+    }
+    
     document.getElementById('modalContent').innerHTML = `
         <div class="row">
             <div class="col-md-6">
@@ -405,6 +470,7 @@ function viewProduct(name, description, price, stock, yurt) {
                 <h6 class="text-muted mt-3">Yurt</h6>
                 <p class="fw-bold">${yurt}</p>
             </div>
+            ${aiSection}
         </div>
     `;
     new bootstrap.Modal(document.getElementById('productModal')).show();
@@ -474,5 +540,40 @@ function rejectAll() {
             rejectProduct(checkbox.value);
         });
     }
+}
+
+// Override AI decision
+let currentProductId = null;
+
+function overrideAIDecision(productId) {
+    currentProductId = productId;
+    new bootstrap.Modal(document.getElementById('overrideModal')).show();
+}
+
+function confirmOverride(action) {
+    if (!currentProductId) return;
+    
+    const reason = document.getElementById('overrideReason').value || 'No reason provided';
+    
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = '@Url.Action("OverrideAIDecision", "Admin")';
+    
+    const inputs = [
+        { name: 'id', value: currentProductId },
+        { name: 'action', value: action },
+        { name: 'reason', value: reason }
+    ];
+    
+    inputs.forEach(input => {
+        const inputElement = document.createElement('input');
+        inputElement.type = 'hidden';
+        inputElement.name = input.name;
+        inputElement.value = input.value;
+        form.appendChild(inputElement);
+    });
+    
+    document.body.appendChild(form);
+    form.submit();
 }
 </script>

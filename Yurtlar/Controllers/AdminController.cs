@@ -84,7 +84,13 @@ namespace Yurtlar.Controllers
         {
             if (Session["IsAdmin"] == null) return RedirectToAction("Login");
 
-            var pending = db.Product.Where(p => p.PStatus == 0).ToList();
+            // Get all products that need attention (pending, AI decisions, or manual review)
+            var pending = db.Product.Where(p => 
+                p.PStatus == 0 || 
+                p.RequiresManualReview == true ||
+                (p.AIApproved.HasValue && p.PStatus == 0)
+            ).ToList();
+            
             return View(pending);
         }
 
@@ -95,6 +101,11 @@ namespace Yurtlar.Controllers
             if (product != null)
             {
                 product.PStatus = 1;
+                // Clear AI flags when manually overriding
+                product.AIApproved = false;
+                product.RequiresManualReview = false;
+                product.AIReason = "Manually approved by admin";
+                product.AIDecisionDate = DateTime.Now;
                 db.SaveChanges();
             }
             return RedirectToAction("Approvals");
@@ -107,8 +118,45 @@ namespace Yurtlar.Controllers
             if (product != null)
             {
                 product.PStatus = 2;
+                // Clear AI flags when manually overriding
+                product.AIApproved = false;
+                product.RequiresManualReview = false;
+                product.AIReason = "Manually rejected by admin";
+                product.AIDecisionDate = DateTime.Now;
                 db.SaveChanges();
             }
+            return RedirectToAction("Approvals");
+        }
+
+        // Override AI decision
+        [HttpPost]
+        public ActionResult OverrideAIDecision(int id, string action, string reason)
+        {
+            if (Session["IsAdmin"] == null) return RedirectToAction("Login");
+
+            var product = db.Product.Find(id);
+            if (product != null)
+            {
+                if (action == "approve")
+                {
+                    product.PStatus = 1;
+                    product.AIApproved = false; // Mark as manually approved
+                }
+                else if (action == "reject")
+                {
+                    product.PStatus = 2;
+                    product.AIApproved = false; // Mark as manually rejected
+                }
+                
+                product.RequiresManualReview = false;
+                product.AIReason = $"Manually {action}d by admin: {reason}";
+                product.AIDecisionDate = DateTime.Now;
+                
+                db.SaveChanges();
+                
+                TempData["Message"] = $"Product {action}d successfully.";
+            }
+            
             return RedirectToAction("Approvals");
         }
 
