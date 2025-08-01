@@ -1,0 +1,115 @@
+﻿
+@{
+    ViewBag.Title = "Iletisim";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container py-5">
+    <div class="row">
+        <div class="col-12">
+            <div class="text-center mb-5">
+                <h1 class="display-4 fw-bold text-primary mb-3">
+                    <i class="fas fa-envelope me-3"></i>İletişim
+                </h1>
+                <p class="lead text-muted">Bizimle iletişime geçin</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-5">
+        <!-- İletişim Bilgileri -->
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body p-4">
+                    <h4 class="fw-bold text-primary mb-4">
+                        <i class="fas fa-address-card me-2"></i>İletişim Bilgileri
+                    </h4>
+
+                    <div class="d-flex align-items-center mb-4">
+                        <div class="bg-primary bg-opacity-10 rounded-circle p-3 me-3">
+                            <i class="fas fa-envelope text-primary"></i>
+                        </div>
+                        <div>
+                            <h6 class="fw-bold mb-1">E-posta</h6>
+                            <p class="text-muted mb-0">info@kykpazar.com</p>
+                        </div>
+                    </div>
+
+                    <div class="d-flex align-items-center mb-4">
+                        <div class="bg-warning bg-opacity-10 rounded-circle p-3 me-3">
+                            <i class="fas fa-phone text-warning"></i>
+                        </div>
+                        <div>
+                            <h6 class="fw-bold mb-1">Telefon</h6>
+                            <p class="text-muted mb-0">+90 (212) 555 0123</p>
+                        </div>
+                    </div>
+
+                    <div class="d-flex align-items-center mb-4">
+                        <div class="bg-success bg-opacity-10 rounded-circle p-3 me-3">
+                            <i class="fas fa-map-marker-alt text-success"></i>
+                        </div>
+                        <div>
+                            <h6 class="fw-bold mb-1">Adres</h6>
+                            <p class="text-muted mb-0">İstanbul, Türkiye</p>
+                        </div>
+                    </div>
+
+                    <div class="d-flex align-items-center">
+                        <div class="bg-info bg-opacity-10 rounded-circle p-3 me-3">
+                            <i class="fas fa-clock text-info"></i>
+                        </div>
+                        <div>
+                            <h6 class="fw-bold mb-1">Çalışma Saatleri</h6>
+                            <p class="text-muted mb-0">7/24 Hizmet</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- İletişim Formu -->
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-4">
+                    <h4 class="fw-bold text-primary mb-4">
+                        <i class="fas fa-paper-plane me-2"></i>Mesaj Gönder
+                    </h4>
+
+                    <form>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="name" class="form-label fw-bold">Ad Soyad</label>
+                                <input type="text" class="form-control" id="name" placeholder="Adınız ve soyadınız">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="email" class="form-label fw-bold">E-posta</label>
+                                <input type="email" class="form-control" id="email" placeholder="E-posta adresiniz">
+                            </div>
+                            <div class="col-12">
+                                <label for="subject" class="form-label fw-bold">Konu</label>
+                                <select class="form-select" id="subject">
+                                    <option selected>Konu seçiniz</option>
+                                    <option value="general">Genel Bilgi</option>
+                                    <option value="support">Teknik Destek</option>
+                                    <option value="complaint">Şikayet</option>
+                                    <option value="suggestion">Öneri</option>
+                                    <option value="other">Diğer</option>
+                                </select>
+                            </div>
+                            <div class="col-12">
+                                <label for="message" class="form-label fw-bold">Mesajınız</label>
+                                <textarea class="form-control" id="message" rows="5" placeholder="Mesajınızı buraya yazın..."></textarea>
+                            </div>
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-primary btn-lg">
+                                    <i class="fas fa-paper-plane me-2"></i>Mesaj Gönder
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div> 

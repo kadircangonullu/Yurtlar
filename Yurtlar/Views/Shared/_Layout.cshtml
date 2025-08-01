@@ -1,35 +1,287 @@
 ﻿<!DOCTYPE html>
-<html>
+<html lang="tr">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@ViewBag.Title - KYK Pazar</title>
 
-    <!-- Bootstrap -->
+    <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-
-    <!-- Google Fonts & FontAwesome -->
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
-    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
-
-    <!-- jQuery & Bootstrap -->
+    
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- jQuery -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    
+    <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
-    <link rel="stylesheet" href="~/Content/custom.css" />
-
     <style>
-        /* Navbar'ın içeriği kapatmaması için üst boşluk ekleme */
+        * {
+            font-family: 'Poppins', sans-serif;
+        }
+        
         body {
-            padding-top: 70px; /* Navbar yüksekliği kadar içerik aşağı insin */
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            min-height: 100vh;
+            margin: 0;
+            padding-top: 80px;
         }
-
-        /* Navbar arkaplanını düzeltme */
+        
+        /* Navbar Styles */
         .navbar {
-            background-color: #343a40 !important; /* Koyu arkaplan */
-            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%) !important;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            border: none;
+            padding: 0.3rem 0;
+            transition: all 0.3s ease;
         }
-
+        
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: #ffffff !important;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .navbar-brand:hover {
+            color: #ff6b35 !important;
+            transform: scale(1.05);
+        }
+        
+        .navbar-nav .nav-link {
+            color: rgba(255, 255, 255, 0.9) !important;
+            font-weight: 500;
+            padding: 0.4rem 0.6rem !important;
+            border-radius: 8px;
+            margin: 0 0.1rem;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.2rem;
+            font-size: 0.85rem;
+            white-space: nowrap;
+        }
+        
+        .navbar-nav .nav-link:hover {
+            color: #ffffff !important;
+            background: rgba(255, 107, 53, 0.2);
+            transform: translateY(-2px);
+        }
+        
+        .navbar-nav .nav-link.active {
+            background: rgba(255, 107, 53, 0.3);
+            color: #ffffff !important;
+            box-shadow: 0 4px 15px rgba(255, 107, 53, 0.3);
+        }
+        
+        .navbar-toggler {
+            border: none;
+            padding: 0.5rem;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .navbar-toggler:focus {
+            box-shadow: none;
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .navbar-toggler-icon {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28255, 255, 255, 0.9%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+        }
+        
+        /* User Welcome Message */
+        .user-welcome {
+            background: rgba(255, 107, 53, 0.1);
+            border-radius: 20px;
+            padding: 0.3rem 0.6rem;
+            margin-right: 0.3rem;
+            border: 1px solid rgba(255, 107, 53, 0.2);
+            font-size: 0.8rem;
+            white-space: nowrap;
+        }
+        
+        /* Main Content */
+        .main-content {
+            min-height: calc(100vh - 160px);
+            padding: 2rem 0;
+        }
+        
+        .container {
+            max-width: 1200px;
+        }
+        
+        /* Footer */
+        footer {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: #ecf0f1;
+            text-align: center;
+            padding: 2rem 0;
+            margin-top: auto;
+            box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        footer p {
+            margin: 0;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+        
+        /* Card Enhancements */
+        .card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+        
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+        }
+        
+        /* Button Enhancements */
+        .btn {
+            border-radius: 10px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border: none;
+        }
+        
+        .btn:hover {
+            transform: translateY(-1px);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+        }
+        
+        .btn-danger {
+            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+        }
+        
+        .btn-warning {
+            background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
+        }
+        
+        /* Form Enhancements */
+        .form-control {
+            border-radius: 10px;
+            border: 2px solid #e9ecef;
+            transition: all 0.3s ease;
+            padding: 0.75rem 1rem;
+        }
+        
+        .form-control:focus {
+            border-color: #1e3c72;
+            box-shadow: 0 0 0 0.2rem rgba(30, 60, 114, 0.25);
+        }
+        
+        /* Table Enhancements */
+        .table {
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        
+        .table th {
+            background: #f8f9fa;
+            border: none;
+            font-weight: 600;
+            color: #495057;
+            padding: 1rem;
+        }
+        
+        .table td {
+            padding: 1rem;
+            vertical-align: middle;
+            border-bottom: 1px solid #f8f9fa;
+        }
+        
+        /* Alert Enhancements */
+        .alert {
+            border: none;
+            border-radius: 10px;
+            font-weight: 500;
+        }
+        
+        /* Badge Enhancements */
+        .badge {
+            border-radius: 20px;
+            font-weight: 600;
+            padding: 0.5rem 1rem;
+        }
+        
+        /* Animation Classes */
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+        
+        @@keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Responsive Design */
+        @@media (max-width: 768px) {
+            body {
+                padding-top: 70px;
+            }
+            
+            .navbar {
+                padding: 0.5rem 0;
+            }
+            
+            .navbar-brand {
+                font-size: 1.25rem;
+            }
+            
+            .navbar-nav .nav-link {
+                padding: 0.5rem 0.75rem !important;
+                margin: 0.25rem 0;
+            }
+            
+            .user-welcome {
+                margin: 0.5rem 0;
+                text-align: center;
+            }
+            
+            .main-content {
+                padding: 1rem 0;
+            }
+        }
+        
+        /* Scrollbar Styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
+        }
     </style>
 </head>
 <body>
@@ -37,41 +289,58 @@
     <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
         <div class="container">
             <a class="navbar-brand" href="@Url.Action("Index", "Home")">
-                <i class="fas fa-store"></i> KYK Pazar
+                <i class="fas fa-store"></i>
+                <span>KYK Pazar</span>
             </a>
+            
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
                     aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
+            
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
                     @if (Session["UserName"] != null)
                     {
                         <!-- Giriş yapılmışsa -->
                         <li class="nav-item">
-                            <span class="nav-link text-warning">Hoş geldin, @Session["UserName"]</span>
+                            <span class="nav-link user-welcome">
+                                <i class="fas fa-user-circle me-2"></i>
+                                Hoş geldin, @Session["UserName"]
+                            </span>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="@Url.Action("SatisEkle", "Home")">
-                                <i class="fas fa-plus-circle"></i> Satış Ekle
+                            <a class="nav-link @(ViewContext.RouteData.Values["Action"].ToString() == "SatisEkle" ? "active" : "")" 
+                               href="@Url.Action("SatisEkle", "Home")">
+                                <i class="fas fa-plus-circle"></i>
+                                <span>Satış Ekle</span>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="@Url.Action("UrunleriListele", "Home")">
-                                <i class="fas fa-list"></i> Ürünleri Listele
+                            <a class="nav-link @(ViewContext.RouteData.Values["Action"].ToString() == "UrunleriListele" ? "active" : "")" 
+                               href="@Url.Action("UrunleriListele", "Home")">
+                                <i class="fas fa-list"></i>
+                                <span>Ürünleri Listele</span>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="@Url.Action("OnaySayfam", "Home")">
-                                <i class="fas fa-check"></i> Onay Sayfam
+                            <a class="nav-link @(ViewContext.RouteData.Values["Action"].ToString() == "OnaySayfam" ? "active" : "")" 
+                               href="@Url.Action("OnaySayfam", "Home")">
+                                <i class="fas fa-check-circle"></i>
+                                <span>Onay Sayfam</span>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="@Url.Action("Profilim", "Home")"><i class="fas fa-user"></i> Profilim</a>
+                            <a class="nav-link @(ViewContext.RouteData.Values["Action"].ToString() == "Profilim" ? "active" : "")" 
+                               href="@Url.Action("Profilim", "Home")">
+                                <i class="fas fa-user"></i>
+                                <span>Profilim</span>
+                            </a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="@Url.Action("Logout", "Home")">
-                                <i class="fas fa-sign-out-alt"></i> Çıkış Yap
+                                <i class="fas fa-sign-out-alt"></i>
+                                <span>Çıkış Yap</span>
                             </a>
                         </li>
                     }
@@ -79,35 +348,91 @@
                     {
                         <!-- Giriş yapılmamışsa -->
                         <li class="nav-item">
-                            <a class="nav-link" href="@Url.Action("Login", "Home")">
-                                <i class="fas fa-sign-in-alt"></i> Giriş Yap
+                            <a class="nav-link @(ViewContext.RouteData.Values["Action"].ToString() == "Login" ? "active" : "")" 
+                               href="@Url.Action("Login", "Home")">
+                                <i class="fas fa-sign-in-alt"></i>
+                                <span>Giriş Yap</span>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="@Url.Action("Register", "Home")">
-                                <i class="fas fa-user-plus"></i> Kayıt Ol
+                            <a class="nav-link @(ViewContext.RouteData.Values["Action"].ToString() == "Register" ? "active" : "")" 
+                               href="@Url.Action("Register", "Home")">
+                                <i class="fas fa-user-plus"></i>
+                                <span>Kayıt Ol</span>
                             </a>
                         </li>
                     }
+                    
+                    <!-- Hakkımızda ve İletişim linkleri -->
+                    <li class="nav-item">
+                        <a class="nav-link @(ViewContext.RouteData.Values["Action"].ToString() == "Hakkimizda" ? "active" : "")" 
+                           href="@Url.Action("Hakkimizda", "Home")">
+                            <i class="fas fa-info-circle"></i>
+                            <span>Hakkımızda</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link @(ViewContext.RouteData.Values["Action"].ToString() == "Iletisim" ? "active" : "")" 
+                           href="@Url.Action("Iletisim", "Home")">
+                            <i class="fas fa-envelope"></i>
+                            <span>İletişim</span>
+                        </a>
+                    </li>
                 </ul>
             </div>
         </div>
     </nav>
 
-
-    <!-- İçerik Alanı -->
-    <div class="container mt-4 flex-grow-1">
-        <div class="body-content">
-            @RenderBody()
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="container">
+            <div class="body-content fade-in">
+                @RenderBody()
+            </div>
         </div>
     </div>
 
     <!-- Footer -->
     <footer>
-        <p>&copy; @DateTime.Now.Year - KYK Pazar | Tüm Hakları Saklıdır.</p>
+        <div class="container">
+            <p>
+                <i class="fas fa-heart text-danger me-2"></i>
+                &copy; @DateTime.Now.Year - KYK Pazar | Tüm Hakları Saklıdır.
+                <i class="fas fa-heart text-danger ms-2"></i>
+            </p>
+        </div>
     </footer>
 
     @RenderSection("Scripts", required: false)
-
+    
+    <script>
+        // Active link highlighting
+        const currentPath = window.location.pathname;
+        const navLinks = document.querySelectorAll('.nav-link');
+        
+        navLinks.forEach(link => {
+            if (link.getAttribute('href') === currentPath) {
+                link.classList.add('active');
+            }
+        });
+        
+        // Add loading animation
+        document.addEventListener('DOMContentLoaded', function() {
+            const bodyContent = document.querySelector('.body-content');
+            bodyContent.classList.add('fade-in');
+        });
+        
+        // Navbar scroll effect
+        window.addEventListener('scroll', function() {
+            const navbar = document.querySelector('.navbar');
+            if (window.scrollY > 50) {
+                navbar.style.background = 'rgba(30, 60, 114, 0.95) !important';
+                navbar.style.backdropFilter = 'blur(10px)';
+            } else {
+                navbar.style.background = 'linear-gradient(135deg, #1e3c72 0%, #2a5298 100%) !important';
+                navbar.style.backdropFilter = 'none';
+            }
+        });
+    </script>
 </body>
 </html>

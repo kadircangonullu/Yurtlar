@@ -172,6 +172,8 @@
     <Content Include="Views\Admin\Approvals.cshtml" />
     <Content Include="Views\Admin\ActiveSales.cshtml" />
     <None Include="Properties\PublishProfiles\Yurtlar - Web Deploy.pubxml" />
+    <Content Include="Views\Home\Hakkimizda.cshtml" />
+    <Content Include="Views\Home\Iletisim.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

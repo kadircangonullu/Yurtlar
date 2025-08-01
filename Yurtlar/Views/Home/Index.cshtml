@@ -10,12 +10,39 @@
     <div class="container position-relative z-index-1">
         <div class="row min-vh-100 align-items-center">
             <div class="col-lg-8 mx-auto text-center text-white">
+                <div class="hero-badge mb-4 animate__animated animate__fadeInDown">
+                    <span class="badge bg-warning text-dark px-3 py-2">
+                        <i class="fas fa-star me-2"></i>Öğrenci Dostu Platform
+                    </span>
+                </div>
                 <h1 class="display-3 fw-bold mb-4 animate__animated animate__fadeInUp">
                     KYK Pazar'a Hoş Geldiniz
                 </h1>
                 <p class="lead mb-4 animate__animated animate__fadeInUp animate__delay-1s">
                     Öğrenciler arası güvenli alışveriş platformu. İhtiyacınız olan her şeyi burada bulun!
                 </p>
+                <div class="hero-stats mb-4 animate__animated animate__fadeInUp animate__delay-1s">
+                    <div class="row justify-content-center">
+                        <div class="col-auto">
+                            <div class="stat-badge">
+                                <i class="fas fa-users text-warning"></i>
+                                <span class="ms-2">1000+ Kullanıcı</span>
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <div class="stat-badge">
+                                <i class="fas fa-box text-warning"></i>
+                                <span class="ms-2">5000+ Ürün</span>
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <div class="stat-badge">
+                                <i class="fas fa-shield-alt text-warning"></i>
+                                <span class="ms-2">%100 Güvenli</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <div class="animate__animated animate__fadeInUp animate__delay-2s">
                     @if (Session["UserName"] == null)
                     {
@@ -46,6 +73,9 @@
     <div class="container">
         <div class="row text-center mb-5">
             <div class="col-lg-8 mx-auto">
+                <span class="badge bg-primary mb-3 px-3 py-2">
+                    <i class="fas fa-star me-2"></i>Özelliklerimiz
+                </span>
                 <h2 class="display-5 fw-bold text-dark mb-3">Neden KYK Pazar?</h2>
                 <p class="lead text-muted">Güvenli, hızlı ve kolay alışveriş deneyimi</p>
             </div>
@@ -58,6 +88,11 @@
                     </div>
                     <h4 class="fw-bold mb-3">Kolay Satış</h4>
                     <p class="text-muted">Ürünlerinizi saniyeler içinde ekleyin ve alıcılarla buluşun. Basit ve kullanıcı dostu arayüz.</p>
+                    <div class="feature-benefits mt-3">
+                        <span class="badge bg-light text-dark me-2 mb-2">Hızlı Ekleme</span>
+                        <span class="badge bg-light text-dark me-2 mb-2">Kolay Yönetim</span>
+                        <span class="badge bg-light text-dark mb-2">Anlık Güncelleme</span>
+                    </div>
                 </div>
             </div>
             <div class="col-lg-4 col-md-6">
@@ -67,6 +102,11 @@
                     </div>
                     <h4 class="fw-bold mb-3">Güvenli Alışveriş</h4>
                     <p class="text-muted">Sadece KYK yurdu öğrencileri ile güvenli ticaret yapın. Doğrulanmış kullanıcılar.</p>
+                    <div class="feature-benefits mt-3">
+                        <span class="badge bg-light text-dark me-2 mb-2">Doğrulanmış Kullanıcılar</span>
+                        <span class="badge bg-light text-dark me-2 mb-2">Güvenli Ödeme</span>
+                        <span class="badge bg-light text-dark mb-2">7/24 Destek</span>
+                    </div>
                 </div>
             </div>
             <div class="col-lg-4 col-md-6">
@@ -76,6 +116,64 @@
                     </div>
                     <h4 class="fw-bold mb-3">Uygun Fiyatlar</h4>
                     <p class="text-muted">İkinci el ve sıfır ürünleri uygun fiyatlarla bulun. Öğrenci bütçesine uygun.</p>
+                    <div class="feature-benefits mt-3">
+                        <span class="badge bg-light text-dark me-2 mb-2">Öğrenci Fiyatları</span>
+                        <span class="badge bg-light text-dark me-2 mb-2">Pazarlık İmkanı</span>
+                        <span class="badge bg-light text-dark mb-2">Kalite Garantisi</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- How It Works Section -->
+<section class="py-5 bg-white">
+    <div class="container">
+        <div class="row text-center mb-5">
+            <div class="col-lg-8 mx-auto">
+                <span class="badge bg-success mb-3 px-3 py-2">
+                    <i class="fas fa-play me-2"></i>Nasıl Çalışır?
+                </span>
+                <h2 class="display-5 fw-bold text-dark mb-3">3 Basit Adımda Başlayın</h2>
+                <p class="lead text-muted">KYK Pazar'da alışveriş yapmak çok kolay</p>
+            </div>
+        </div>
+        <div class="row g-4">
+            <div class="col-lg-4 col-md-6">
+                <div class="step-card text-center p-4 h-100">
+                    <div class="step-number mb-3">
+                        <span class="step-circle">1</span>
+                    </div>
+                    <h4 class="fw-bold mb-3">Hesap Oluşturun</h4>
+                    <p class="text-muted">Hızlı ve güvenli bir şekilde hesabınızı oluşturun. Sadece öğrenci kimliğiniz yeterli.</p>
+                    <div class="step-icon mt-3">
+                        <i class="fas fa-user-plus fa-2x text-primary"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6">
+                <div class="step-card text-center p-4 h-100">
+                    <div class="step-number mb-3">
+                        <span class="step-circle">2</span>
+                    </div>
+                    <h4 class="fw-bold mb-3">Ürün Ekleyin</h4>
+                    <p class="text-muted">Satmak istediğiniz ürünleri kolayca ekleyin. Fotoğraf ve detayları girin.</p>
+                    <div class="step-icon mt-3">
+                        <i class="fas fa-plus-circle fa-2x text-success"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6">
+                <div class="step-card text-center p-4 h-100">
+                    <div class="step-number mb-3">
+                        <span class="step-circle">3</span>
+                    </div>
+                    <h4 class="fw-bold mb-3">Satış Yapın</h4>
+                    <p class="text-muted">Alıcılarla iletişime geçin ve güvenli bir şekilde satışınızı tamamlayın.</p>
+                    <div class="step-icon mt-3">
+                        <i class="fas fa-handshake fa-2x text-warning"></i>
+                    </div>
                 </div>
             </div>
         </div>
@@ -118,6 +216,74 @@
     </div>
 </section>
 
+<!-- Testimonials Section -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row text-center mb-5">
+            <div class="col-lg-8 mx-auto">
+                <span class="badge bg-info mb-3 px-3 py-2">
+                    <i class="fas fa-quote-left me-2"></i>Kullanıcı Yorumları
+                </span>
+                <h2 class="display-5 fw-bold text-dark mb-3">Kullanıcılarımız Ne Diyor?</h2>
+                <p class="lead text-muted">Platformumuzu kullanan öğrencilerin deneyimleri</p>
+            </div>
+        </div>
+        <div class="row g-4">
+            <div class="col-lg-4 col-md-6">
+                <div class="testimonial-card text-center p-4 h-100">
+                    <div class="testimonial-avatar mb-3">
+                        <i class="fas fa-user-circle fa-3x text-primary"></i>
+                    </div>
+                    <div class="testimonial-rating mb-3">
+                        <i class="fas fa-star text-warning"></i>
+                        <i class="fas fa-star text-warning"></i>
+                        <i class="fas fa-star text-warning"></i>
+                        <i class="fas fa-star text-warning"></i>
+                        <i class="fas fa-star text-warning"></i>
+                    </div>
+                    <p class="text-muted mb-3">"KYK Pazar sayesinde eski kitaplarımı satarak harçlık çıkardım. Çok güvenli ve kolay bir platform."</p>
+                    <h6 class="fw-bold text-dark mb-1">Ahmet Y.</h6>
+                    <small class="text-muted">Bilgisayar Mühendisliği Öğrencisi</small>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6">
+                <div class="testimonial-card text-center p-4 h-100">
+                    <div class="testimonial-avatar mb-3">
+                        <i class="fas fa-user-circle fa-3x text-success"></i>
+                    </div>
+                    <div class="testimonial-rating mb-3">
+                        <i class="fas fa-star text-warning"></i>
+                        <i class="fas fa-star text-warning"></i>
+                        <i class="fas fa-star text-warning"></i>
+                        <i class="fas fa-star text-warning"></i>
+                        <i class="fas fa-star text-warning"></i>
+                    </div>
+                    <p class="text-muted mb-3">"İhtiyacım olan laptop'u çok uygun fiyata buldum. Satıcı çok güvenilirdi ve işlem çok hızlı oldu."</p>
+                    <h6 class="fw-bold text-dark mb-1">Zeynep K.</h6>
+                    <small class="text-muted">İşletme Öğrencisi</small>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6">
+                <div class="testimonial-card text-center p-4 h-100">
+                    <div class="testimonial-avatar mb-3">
+                        <i class="fas fa-user-circle fa-3x text-warning"></i>
+                    </div>
+                    <div class="testimonial-rating mb-3">
+                        <i class="fas fa-star text-warning"></i>
+                        <i class="fas fa-star text-warning"></i>
+                        <i class="fas fa-star text-warning"></i>
+                        <i class="fas fa-star text-warning"></i>
+                        <i class="fas fa-star text-warning"></i>
+                    </div>
+                    <p class="text-muted mb-3">"Sadece öğrenciler arası olduğu için çok güvenli. Artık ikinci el eşya alırken endişelenmiyorum."</p>
+                    <h6 class="fw-bold text-dark mb-1">Mehmet A.</h6>
+                    <small class="text-muted">Tıp Öğrencisi</small>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
 <!-- CTA Section -->
 <section class="py-5 bg-dark text-white">
     <div class="container text-center">
@@ -140,7 +306,7 @@
 
 <style>
     .hero-section {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
         min-height: 100vh;
         position: relative;
     }
@@ -197,5 +363,96 @@
     
     .animate__delay-2s {
         animation-delay: 1s;
+    }
+    
+    /* Hero Badge */
+    .hero-badge {
+        animation-delay: 0.2s;
+    }
+    
+    .stat-badge {
+        background: rgba(255, 255, 255, 0.2);
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        margin: 0 0.5rem;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+    
+    /* Step Cards */
+    .step-card {
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        border: 2px solid transparent;
+    }
+    
+    .step-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        border-color: #1e3c72;
+    }
+    
+    .step-circle {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 60px;
+        height: 60px;
+        background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+        color: white;
+        border-radius: 50%;
+        font-size: 1.5rem;
+        font-weight: bold;
+        box-shadow: 0 4px 15px rgba(30, 60, 114, 0.3);
+    }
+    
+    .step-icon {
+        transition: transform 0.3s ease;
+    }
+    
+    .step-card:hover .step-icon {
+        transform: scale(1.1);
+    }
+    
+    /* Testimonial Cards */
+    .testimonial-card {
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        border: 2px solid transparent;
+    }
+    
+    .testimonial-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        border-color: #ff6b35;
+    }
+    
+    .testimonial-avatar {
+        transition: transform 0.3s ease;
+    }
+    
+    .testimonial-card:hover .testimonial-avatar {
+        transform: scale(1.1);
+    }
+    
+    .testimonial-rating {
+        transition: transform 0.3s ease;
+    }
+    
+    .testimonial-card:hover .testimonial-rating {
+        transform: scale(1.05);
+    }
+    
+    /* Feature Benefits */
+    .feature-benefits {
+        transition: opacity 0.3s ease;
+    }
+    
+    .feature-card:hover .feature-benefits {
+        opacity: 1;
     }
 </style>

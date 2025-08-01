@@ -265,5 +265,17 @@ namespace Yurtlar.Controllers
         {
             return View();
         }
+
+        // GET: Hakkımızda
+        public ActionResult Hakkimizda()
+        {
+            return View();
+        }
+
+        // GET: İletişim
+        public ActionResult Iletisim()
+        {
+            return View();
+        }
     }
 }
