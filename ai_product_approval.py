@@ -45,6 +45,12 @@ def get_pending_products(conn):
 def evaluate_product_with_ai(product):
     """LLM ile ürün değerlendirmesi yapar"""
     try:
+        # Önce manuel kuralları kontrol et
+        manual_decision = check_manual_rules(product)
+        if manual_decision != 'PASS':
+            return manual_decision
+        
+        # AI değerlendirmesi
         prompt = f"""
 Sen bir e-ticaret sitesi moderatörüsün. Aşağıdaki ürün bilgilerini incele:
 
@@ -54,14 +60,14 @@ Fiyat: {product[3]} TL
 Stok: {product[4]} adet
 Yurt: {product[5]}
 
-Kontrol kriterleri:
-1. Ürün adında veya açıklamasında küfür, hakaret, lanet gibi kelimeler var mı?
+KATI KONTROL:
+1. Küfür var mı? (lanet, kahrolası, siktir, berbat, kötü, rezalet)
 2. +18 içerik var mı?
-3. Uygunsuz veya yasaklı ürün mü?
-4. Açıklama çok kısa (5 kelimeden az) veya anlamsız mı?
+3. Uygunsuz ürün mü?
+4. Açıklama 5 kelimeden az mı?
 
-Eğer yukarıdaki kriterlerden herhangi biri varsa RED yaz.
-Eğer hiçbiri yoksa ONAY yaz.
+EĞER YUKARIDAKİLERDEN HERHANGİ BİRİ VARSA KESİNLİKLE RED YAZ.
+SADECE HİÇBİRİ YOKSA ONAY YAZ.
 
 Sadece ONAY veya RED yaz. Başka hiçbir şey yazma.
 """
@@ -85,6 +91,35 @@ Sadece ONAY veya RED yaz. Başka hiçbir şey yazma.
     except Exception as e:
         print(f"❌ AI değerlendirme hatası: {e}")
         return 'ERROR'
+
+def check_manual_rules(product):
+    """Manuel kuralları kontrol eder"""
+    name = product[1].lower()
+    desc = product[2].lower()
+    
+    # Küfür kelimeleri
+    bad_words = ['lanet', 'kahrolası', 'siktir', 'berbat', 'kötü', 'rezalet', 'pis', 'çirkin']
+    
+    # Küfür kontrolü
+    for word in bad_words:
+        if word in name or word in desc:
+            print(f"   🚫 Küfür tespit edildi: '{word}'")
+            return 'RED'
+    
+    # Kısa açıklama kontrolü (5 kelimeden az)
+    word_count = len(desc.split())
+    if word_count < 5:
+        print(f"   📝 Açıklama çok kısa: {word_count} kelime")
+        return 'RED'
+    
+    # +18 içerik kontrolü
+    adult_words = ['cinsel', 'pornografik', 'şiddet', 'kan', 'ölüm']
+    for word in adult_words:
+        if word in name or word in desc:
+            print(f"   🔞 +18 içerik tespit edildi: '{word}'")
+            return 'RED'
+    
+    return 'PASS'  # Manuel kuralları geçti, AI'ya gönder
 
 def update_product_status(conn, product_id, status):
     """Ürün durumunu günceller"""
