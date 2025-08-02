@@ -7,7 +7,7 @@
       <Diagram DiagramId="7cab0f5c632e4ac5936e0444fec7f849" Name="Diagram1" ZoomLevel="85">
         <EntityTypeShape EntityType="KykMarketModel.Admin" Width="1.5" PointX="0.75" PointY="4.75" />
         <EntityTypeShape EntityType="KykMarketModel.Product" Width="1.5" PointX="5.625" PointY="1" />
-        <EntityTypeShape EntityType="KykMarketModel.Users" Width="1.5" PointX="3.375" PointY="1.25" />
+        <EntityTypeShape EntityType="KykMarketModel.Users" Width="1.5" PointX="3.375" PointY="1.5" />
         <AssociationConnector Association="KykMarketModel.FK_Product_Users" />
       </Diagram>
     </edmx:Diagrams>

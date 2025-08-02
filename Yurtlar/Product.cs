@@ -23,6 +23,10 @@ namespace Yurtlar
         public Nullable<int> PStock { get; set; }
         public string PKyk { get; set; }
         public int UserId { get; set; }
+        public Nullable<bool> AIApproved { get; set; }
+        public string AIReason { get; set; }
+        public Nullable<System.DateTime> AIDecisionDate { get; set; }
+        public Nullable<bool> RequiresManualReview { get; set; }
     
         public virtual Users Users { get; set; }
     }

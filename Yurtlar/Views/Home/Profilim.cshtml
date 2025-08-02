@@ -79,7 +79,7 @@
                         </div>
                         
                         <div class="form-floating mb-4">
-                            <input type="password" name="Password" value="@Model.Password" class="form-control" placeholder="Şifre" required />
+                            <input type="password" name="Password" class="form-control" placeholder="Şifre" required />
                             <label>
                                 <i class="fas fa-lock me-2"></i>Şifre
                             </label>
@@ -183,12 +183,21 @@
                                                     <i class="fas fa-check me-1"></i>Onaylandı
                                                 </span>
                                             }
-                                            else
+
+                                            else if (item.PStatus == 0)
                                             {
                                                 <span class="badge bg-warning text-dark">
-                                                    <i class="fas fa-clock me-1"></i>Onay Bekliyor
+                                                    <i class="fas fa-clock me-1"></i>Beklemede
                                                 </span>
                                             }
+
+                                            else
+                                            {
+                                                <span class="badge bg-danger">
+                                                    <i class="fas fa-times me-1"></i>Reddedildi
+                                                </span>
+                                            }
+
                                         </td>
                                         <td>
                                             <div class="btn-group btn-group-sm" role="group">

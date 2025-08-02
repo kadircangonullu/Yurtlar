@@ -26,6 +26,10 @@
           <Property Name="PStock" Type="int" />
           <Property Name="PKyk" Type="nvarchar" MaxLength="50" />
           <Property Name="UserId" Type="int" Nullable="false" />
+          <Property Name="AIApproved" Type="bit" />
+          <Property Name="AIReason" Type="nvarchar" MaxLength="500" />
+          <Property Name="AIDecisionDate" Type="datetime" />
+          <Property Name="RequiresManualReview" Type="bit" />
         </EntityType>
         <EntityType Name="Users">
           <Key>
@@ -37,6 +41,8 @@
           <Property Name="Mail" Type="varchar" MaxLength="50" />
           <Property Name="Phone" Type="varchar" MaxLength="50" />
           <Property Name="Password" Type="varchar" MaxLength="255" />
+          <Property Name="EmailVerificationCode" Type="uniqueidentifier" />
+          <Property Name="IsVerified" Type="bit" />
         </EntityType>
         <Association Name="FK_Product_Users">
           <End Role="Users" Type="Self.Users" Multiplicity="1" />
@@ -93,6 +99,10 @@
           <Property Name="PStock" Type="Int32" />
           <Property Name="PKyk" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="UserId" Type="Int32" Nullable="false" />
+          <Property Name="AIApproved" Type="Boolean" />
+          <Property Name="AIReason" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
+          <Property Name="AIDecisionDate" Type="DateTime" Precision="3" />
+          <Property Name="RequiresManualReview" Type="Boolean" />
           <NavigationProperty Name="Users" Relationship="KykMarketModel.FK_Product_Users" FromRole="Product" ToRole="Users" />
         </EntityType>
         <EntityType Name="Users">
@@ -105,6 +115,8 @@
           <Property Name="Mail" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
           <Property Name="Phone" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
           <Property Name="Password" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="EmailVerificationCode" Type="Guid" />
+          <Property Name="IsVerified" Type="Boolean" />
           <NavigationProperty Name="Product" Relationship="KykMarketModel.FK_Product_Users" FromRole="Users" ToRole="Product" />
         </EntityType>
         <Association Name="FK_Product_Users">
@@ -137,6 +149,10 @@
           <EntitySetMapping Name="Product">
             <EntityTypeMapping TypeName="KykMarketModel.Product">
               <MappingFragment StoreEntitySet="Product">
+                <ScalarProperty Name="RequiresManualReview" ColumnName="RequiresManualReview" />
+                <ScalarProperty Name="AIDecisionDate" ColumnName="AIDecisionDate" />
+                <ScalarProperty Name="AIReason" ColumnName="AIReason" />
+                <ScalarProperty Name="AIApproved" ColumnName="AIApproved" />
                 <ScalarProperty Name="UserId" ColumnName="UserId" />
                 <ScalarProperty Name="PKyk" ColumnName="PKyk" />
                 <ScalarProperty Name="PStock" ColumnName="PStock" />
@@ -152,6 +168,8 @@
           <EntitySetMapping Name="Users">
             <EntityTypeMapping TypeName="KykMarketModel.Users">
               <MappingFragment StoreEntitySet="Users">
+                <ScalarProperty Name="IsVerified" ColumnName="IsVerified" />
+                <ScalarProperty Name="EmailVerificationCode" ColumnName="EmailVerificationCode" />
                 <ScalarProperty Name="Password" ColumnName="Password" />
                 <ScalarProperty Name="Phone" ColumnName="Phone" />
                 <ScalarProperty Name="Mail" ColumnName="Mail" />

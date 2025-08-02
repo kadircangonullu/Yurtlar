@@ -1,9 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
+using System.Text;
 using System.Web;
 using System.Web.Mvc;
+using System.Security.Cryptography;
+using System.Text;
 using Yurtlar.Models;
+using System.Net.Mail;
+using System.Web.Helpers;
 
 namespace Yurtlar.Controllers
 {
@@ -158,7 +164,11 @@ namespace Yurtlar.Controllers
                 user.Surname = updatedUser.Surname;
                 user.Phone = updatedUser.Phone;
                 user.Mail = updatedUser.Mail;
-                user.Password = updatedUser.Password;
+                if (!string.IsNullOrWhiteSpace(updatedUser.Password))
+                {
+                    // Şifre girildiyse hash'leyerek güncelle
+                    user.Password = Crypto.HashPassword(updatedUser.Password);
+                }
 
                 db.SaveChanges();
             }
@@ -223,21 +233,31 @@ namespace Yurtlar.Controllers
         [HttpPost]
         public ActionResult Login(string username, string password)
         {
-            var user = db.Users.FirstOrDefault(u => u.Mail == username && u.Password == password);
+            var user = db.Users.FirstOrDefault(u => u.Mail.ToLower() == username.ToLower());
 
-            if (user != null)
+            if (user != null && user.IsVerified == true && !string.IsNullOrEmpty(user.Password))
             {
-                // Giriş başarılı
-                Session["UserId"] = user.UserId;
-                Session["UserName"] = user.Name;
-                return RedirectToAction("Index");
+                try
+                {
+                    bool Isvalid = Crypto.VerifyHashedPassword(user.Password, password);
+                    if (Isvalid)
+                    {
+                        Session["UserId"] = user.UserId;
+                        Session["UserName"] = user.Name;
+                        return RedirectToAction("Index");
+                    }
+                }
+                catch (FormatException)
+                {
+                    ViewBag.Error = "Kullanıcı bilgileri hatalı. Şifre formatı geçersiz.";
+                    return View();
+                }
             }
-            else
-            {
-                ViewBag.Error = "Hatalı kullanıcı adı veya şifre!";
-                return View();
-            }
+
+            ViewBag.Error = "Email henüz doğrulanmamış veya bilgiler hatalı!";
+            return View();
         }
+
 
         // GET
         public ActionResult Register()
@@ -251,13 +271,56 @@ namespace Yurtlar.Controllers
         {
             if (ModelState.IsValid)
             {
+                newUser.EmailVerificationCode = Guid.NewGuid();
+                newUser.IsVerified = false;
+                // Şifreyi hash'le
+                newUser.Password = Crypto.HashPassword(newUser.Password);
                 db.Users.Add(newUser);
                 db.SaveChanges();
-                TempData["Success"] = "Kayıt başarılı! Giriş yapabilirsiniz.";
+
+                SendVerificationEmail(newUser.Mail, newUser.EmailVerificationCode.Value);
+
+                ViewBag.Message = "Kaydınız başarıyla alındı. Lütfen mailinizi kontrol edin.";
+
                 return RedirectToAction("Login");
             }
 
             return View(newUser);
+        }
+
+
+
+        public void SendVerificationEmail(string email, Guid code)
+        {
+            var verifyUrl = Url.Action("VerifyEmail", "Home", new { code = code }, protocol: Request.Url.Scheme);
+
+            string body = $"<h4>Hesabınızı doğrulamak için aşağıdaki linke tıklayın:</h4>" +
+                          $"<a href='{verifyUrl}'>Email Doğrula</a>";
+
+            MailMessage message = new MailMessage();
+            message.To.Add(email);
+            message.Subject = "KYK Market - Email Doğrulama";
+            message.Body = body;
+            message.IsBodyHtml = true;
+
+            SmtpClient smtp = new SmtpClient();
+            smtp.Send(message);
+        }
+
+        public ActionResult VerifyEmail(Guid code)
+        {
+            var user = db.Users.FirstOrDefault(u => u.EmailVerificationCode == code);
+            if (user != null)
+            {
+                user.IsVerified = true;
+                db.SaveChanges();
+                ViewBag.Message = "Email başarıyla doğrulandı!";
+            }
+            else
+            {
+                ViewBag.Message = "Geçersiz doğrulama bağlantısı.";
+            }
+            return View();
         }
 
         // GET: Home
