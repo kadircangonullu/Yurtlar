@@ -341,6 +341,59 @@ namespace Yurtlar.Controllers
             return View();
         }
 
+        public ActionResult ChatWithUser(int receiverId)
+        {
+            if (Session["UserId"] == null)
+                return RedirectToAction("Login");
+
+            int currentUserId = (int)Session["UserId"];
+
+            var messages = db.Message
+    .Where(m => (m.SenderId == currentUserId && m.ReceiverId == receiverId) ||
+                (m.SenderId == receiverId && m.ReceiverId == currentUserId))
+    .OrderBy(m => m.SentAt)
+    .ToList();
+
+            ViewBag.Messages = messages;
+
+            // Hem gönderen hem alıcı bilgilerini gönderelim
+            ViewBag.Users = db.Users.ToList();
+            ViewBag.ReceiverId = receiverId;
+
+            return View("Chat"); // Chat.cshtml'i kullan
+        }
+
+
+        public ActionResult Chat()
+        {
+            if (Session["UserId"] == null) return RedirectToAction("Login");
+
+            ViewBag.Users = db.Users.ToList();
+            return View();
+        }
+
+
+        [HttpPost]
+        public ActionResult SendMessage(int fromUserId, int toUserId, string message)
+        {
+            if (Session["UserId"] == null) return RedirectToAction("Login");
+
+            var senderId = (int)Session["UserId"];
+            var msg = new Message
+            {
+                SenderId = fromUserId,
+                ReceiverId = toUserId,
+                Content = message,
+                SentAt = DateTime.Now
+            };
+
+            db.Message.Add(msg);
+            db.SaveChanges();
+
+            return new HttpStatusCodeResult(200);
+        }
+
+
         // GET: Home
         public ActionResult Index()
         {

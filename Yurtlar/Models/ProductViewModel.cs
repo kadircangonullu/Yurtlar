@@ -15,5 +15,7 @@ namespace Yurtlar.Models
         public int PStatus { get; set; }
         public string PKyk { get; set; }
         public string Phone { get; set; }
+        public int UserId { get; set; }
+
     }
 }

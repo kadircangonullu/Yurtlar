@@ -1,0 +1,116 @@
+﻿@{
+    ViewBag.Title = "Sohbet";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    int currentUserId = (int)Session["UserId"];
+}
+
+<h2 class="text-primary">Sohbet</h2>
+
+<div class="row mt-4">
+    <div class="col-md-4">
+        <h5>Kullanıcılar</h5>
+        <ul id="userList" class="list-group">
+            @foreach (var user in ViewBag.Users as List<Yurtlar.Users>)
+            {
+                if (user.UserId != currentUserId)
+                {
+                    <li class="list-group-item user-item" data-user-id="@user.UserId">@user.Name @user.Surname</li>
+                }
+            }
+        </ul>
+    </div>
+    <div class="col-md-8">
+        <h5 id="chatWithLabel" class="text-secondary">Kime mesaj atılacak?</h5>
+        <div id="chatBox" class="border rounded p-3 mb-3" style="height: 300px; overflow-y: auto; background-color: #f9f9f9;">
+            @if (ViewBag.Messages != null)
+            {
+                foreach (var msg in ViewBag.Messages as List<Yurtlar.Message>)
+                {
+                    if (msg.SenderId == currentUserId)
+                    {
+                        <div><strong>Siz:</strong> @msg.Content</div>
+                    }
+                    else
+                    {
+                        <div><strong>Karşı taraf:</strong> @msg.Content</div>
+                    }
+                }
+            }
+        </div>
+
+        <div class="input-group">
+            <input type="text" id="messageInput" class="form-control" placeholder="Mesajınızı yazın..." />
+            <button id="sendBtn" class="btn btn-success" disabled>Gönder</button>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <!-- Önce jQuery -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+    <!-- Ardından SignalR (DOĞRU OLAN: Microsoft ASP.NET SignalR için 2.x sürüm!) -->
+    <script src="~/Scripts/jquery.signalR-2.4.3.min.js"></script> <!-- Bu dosya local olmalı -->
+    <!-- Ardından hubs (dinamik olarak backend'de üretiliyor) -->
+    <script src="/signalr/hubs"></script>
+
+
+    <script>
+        let selectedUserId = @ViewBag.ReceiverId ?? null;
+        const currentUserId = @currentUserId;
+
+        $(function () {
+            const chat = $.connection.chatHub;
+
+            // Gelen mesajları karşıla
+            chat.client.receiveMessage = function (fromUserId, toUserId, message) {
+                if ((fromUserId == currentUserId && toUserId == selectedUserId) ||
+                    (fromUserId == selectedUserId && toUserId == currentUserId)) {
+                    $('#chatBox').append(`<div><strong>${fromUserId == currentUserId ? "Siz" : "Karşı taraf"}:</strong> ${message}</div>`);
+                }
+            };
+
+            $.connection.hub.start().done(function () {
+                $('#sendBtn').prop('disabled', false);
+
+                $('#sendBtn').click(function () {
+                    const message = $('#messageInput').val().trim(); // 🔄 önce mesajı al
+                    if (!message || !selectedUserId) return;
+
+                    // SignalR üzerinden gönder
+                    chat.server.send(currentUserId.toString(), selectedUserId.toString(), message);
+
+                    // Veritabanına yaz
+                    $.ajax({
+                        type: 'POST',
+                        url: '/Home/SendMessage',
+                        data: {
+                            fromUserId: currentUserId,
+                            toUserId: selectedUserId,
+                            message: message
+                        }
+                    });
+
+                    $('#messageInput').val(''); // 🔄 sonra temizle
+                    scrollToBottom(); // 🔄 sonra scroll
+                });
+
+
+                // Kullanıcı seçimi
+                $('.user-item').click(function () {
+                    selectedUserId = $(this).data('user-id');
+                    $('#chatWithLabel').text("Seçilen kullanıcı ile sohbet başlatılıyor...");
+                    $('#chatBox').empty();
+                });
+                scrollToBottom();
+            });
+        });
+
+        function scrollToBottom() {
+            const chatBox = document.getElementById('chatBox');
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+        scrollToBottom();
+
+    </script>
+}

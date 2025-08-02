@@ -9,6 +9,9 @@
         <EntityTypeShape EntityType="KykMarketModel.Product" Width="1.5" PointX="5.625" PointY="1" />
         <EntityTypeShape EntityType="KykMarketModel.Users" Width="1.5" PointX="3.375" PointY="1.5" />
         <AssociationConnector Association="KykMarketModel.FK_Product_Users" />
+        <EntityTypeShape EntityType="KykMarketModel.Message" Width="1.5" PointX="5.625" PointY="5.875" />
+        <AssociationConnector Association="KykMarketModel.FK_Message_Receiver" />
+        <AssociationConnector Association="KykMarketModel.FK_Message_Sender" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

@@ -131,9 +131,9 @@
                                 <small class="text-muted">
                                     <i class="fas fa-building me-1"></i>@item.PKyk
                                 </small>
-                                <button class="btn btn-outline-primary btn-sm" onclick="contactSeller('@item.Phone')">
-                                    <i class="fas fa-phone me-1"></i>İletişim
-                                </button>
+                                <a href="@Url.Action("ChatWithUser", "Home", new { receiverId = item.UserId })" class="btn btn-primary btn-sm">
+                                    İletişime Geç
+                                </a>
                             </div>
                         </div>
                     </div>

@@ -28,5 +28,6 @@ namespace Yurtlar
         public virtual DbSet<Admin> Admin { get; set; }
         public virtual DbSet<Product> Product { get; set; }
         public virtual DbSet<Users> Users { get; set; }
+        public virtual DbSet<Message> Message { get; set; }
     }
 }
