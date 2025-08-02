@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using System.Web.Helpers;
 using System.Web.Mvc;
 
 namespace Yurtlar.Controllers
@@ -21,8 +22,9 @@ namespace Yurtlar.Controllers
         {
             using (var db = new KykMarketEntities())
             {
-                var admin = db.Admin.FirstOrDefault(a => a.Name == username && a.Password == password);
-                if (admin != null)
+                var admin = db.Admin.FirstOrDefault(a => a.Name == username);
+
+                if (admin != null && Crypto.VerifyHashedPassword(admin.Password, password) && !string.IsNullOrEmpty(admin.Password))
                 {
                     Session["IsAdmin"] = true;
                     Session["AdminName"] = admin.Name;
@@ -36,6 +38,15 @@ namespace Yurtlar.Controllers
             }
         
         }
+
+        public ActionResult GenerateAdminHash()
+        {
+            string plainPassword = "12345";
+            string hashedPassword = Crypto.HashPassword(plainPassword);
+
+            return Content(hashedPassword); // tarayıcıda görürsün
+        }
+
 
         public ActionResult Logout()
         {

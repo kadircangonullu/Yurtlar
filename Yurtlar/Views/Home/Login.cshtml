@@ -19,6 +19,13 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body class="login-page">
+
+    @if (ViewBag.Message != null)
+    {
+        <div class="alert alert-success text-center">
+            @ViewBag.Message <br />
+        </div>
+    }
     <div class="container-fluid">
         <div class="row min-vh-100">
             <!-- Left Side - Background -->
@@ -45,7 +52,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <!-- Right Side - Login Form -->
             <div class="col-lg-6 col-12 d-flex align-items-center justify-content-center">
                 <div class="login-form-wrapper">
@@ -56,7 +63,7 @@
                         <h2 class="fw-bold text-dark mb-2">Giriş Yap</h2>
                         <p class="text-muted">Hesabınıza giriş yapın</p>
                     </div>
-                    
+
                     <form method="post" action="/Home/Login" class="login-form">
                         <div class="form-floating mb-3">
                             <input type="email" class="form-control" id="username" name="username" placeholder="E-posta" required>
@@ -64,21 +71,21 @@
                                 <i class="fas fa-envelope me-2"></i>E-posta Adresi
                             </label>
                         </div>
-                        
+
                         <div class="form-floating mb-4">
                             <input type="password" class="form-control" id="password" name="password" placeholder="Şifre" required>
                             <label for="password">
                                 <i class="fas fa-lock me-2"></i>Şifre
                             </label>
                         </div>
-                        
+
                         <div class="d-grid mb-3">
                             <button type="submit" class="btn btn-primary btn-lg">
                                 <i class="fas fa-sign-in-alt me-2"></i>Giriş Yap
                             </button>
                         </div>
-                        
-                        @if(ViewBag.ErrorMessage != null)
+
+                        @if (ViewBag.ErrorMessage != null)
                         {
                             <div class="alert alert-danger alert-dismissible fade show" role="alert">
                                 <i class="fas fa-exclamation-triangle me-2"></i>
@@ -86,7 +93,7 @@
                                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                             </div>
                         }
-                        
+
                         <div class="text-center mt-4">
                             <p class="text-muted mb-0">Hesabınız yok mu?</p>
                             <a href="@Url.Action("Register", "Home")" class="btn btn-link text-decoration-none">
@@ -94,7 +101,7 @@
                             </a>
                         </div>
                     </form>
-                    
+
                     <div class="text-center mt-4">
                         <a href="@Url.Action("Index", "Home")" class="text-muted text-decoration-none">
                             <i class="fas fa-arrow-left me-1"></i>Ana Sayfaya Dön
@@ -107,33 +114,33 @@
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    
+
     <style>
         * {
             font-family: 'Poppins', sans-serif;
         }
-        
+
         .login-page {
             background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
         }
-        
+
         .login-bg {
             background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
             position: relative;
             overflow: hidden;
         }
-        
-        .login-bg::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000"><polygon fill="rgba(255,255,255,0.1)" points="0,1000 1000,0 1000,1000"/></svg>');
-            background-size: cover;
-        }
-        
+
+            .login-bg::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000"><polygon fill="rgba(255,255,255,0.1)" points="0,1000 1000,0 1000,1000"/></svg>');
+                background-size: cover;
+            }
+
         .overlay {
             position: absolute;
             top: 0;
@@ -142,7 +149,7 @@
             bottom: 0;
             background: rgba(0,0,0,0.3);
         }
-        
+
         .content-wrapper {
             position: relative;
             z-index: 2;
@@ -152,7 +159,7 @@
             justify-content: center;
             padding: 2rem;
         }
-        
+
         .login-form-wrapper {
             background: white;
             border-radius: 20px;
@@ -162,26 +169,26 @@
             max-width: 450px;
             margin: 2rem;
         }
-        
+
         .logo {
             transition: transform 0.3s ease;
         }
-        
-        .logo:hover {
-            transform: scale(1.05);
-        }
-        
+
+            .logo:hover {
+                transform: scale(1.05);
+            }
+
         .form-floating > .form-control {
             border-radius: 10px;
             border: 2px solid #e9ecef;
             transition: all 0.3s ease;
         }
-        
-        .form-floating > .form-control:focus {
-            border-color: #1e3c72;
-            box-shadow: 0 0 0 0.2rem rgba(30, 60, 114, 0.25);
-        }
-        
+
+            .form-floating > .form-control:focus {
+                border-color: #1e3c72;
+                box-shadow: 0 0 0 0.2rem rgba(30, 60, 114, 0.25);
+            }
+
         .btn-primary {
             background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
             border: none;
@@ -190,31 +197,31 @@
             font-weight: 600;
             transition: all 0.3s ease;
         }
-        
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(30, 60, 114, 0.3);
-        }
-        
+
+            .btn-primary:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 10px 20px rgba(30, 60, 114, 0.3);
+            }
+
         .feature-item {
             font-size: 1.1rem;
             font-weight: 500;
         }
-        
+
         .alert {
             border-radius: 10px;
             border: none;
         }
-        
+
         .btn-link {
             color: #1e3c72;
             font-weight: 600;
         }
-        
-        .btn-link:hover {
-            color: #ff6b35;
-        }
-        
+
+            .btn-link:hover {
+                color: #ff6b35;
+            }
+
         @@media (max-width: 991.98px) {
             .login-form-wrapper {
                 margin: 1rem;

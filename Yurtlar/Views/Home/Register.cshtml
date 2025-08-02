@@ -89,14 +89,18 @@
                         </div>
 
                         <div class="form-floating mb-3">
-                            <input type="email" class="form-control" id="Mail" name="Mail" placeholder="E-posta" required>
+                            <input type="email" class="form-control" id="Mail" name="Mail" placeholder="E-posta" required
+                                   pattern="^[a-zA-Z0-9._%+-]+ogr\.[a-zA-Z0-9.-]+\.edu\.tr$"
+                                   title="Sadece ogr.xxx.edu.tr uzantılı mail adresi girilebilir.">
+                            @Html.ValidationMessageFor(model => model.Mail, "", new { @class = "text-danger small" })
                             <label for="Mail">
                                 <i class="fas fa-envelope me-2"></i>E-posta Adresi
                             </label>
                         </div>
 
                         <div class="form-floating mb-3">
-                            <input type="tel" class="form-control" id="Phone" name="Phone" placeholder="Telefon" required>
+                            <input type="tel" class="form-control" id="Phone" name="Phone" maxlength="11" pattern="^\d{11}$" title="11 haneli bir telefon numarası girin" placeholder="Telefon" required>
+                            @Html.ValidationMessageFor(model => model.Phone, "", new { @class = "text-danger small" })
                             <label for="Phone">
                                 <i class="fas fa-phone me-2"></i>Telefon Numarası
                             </label>

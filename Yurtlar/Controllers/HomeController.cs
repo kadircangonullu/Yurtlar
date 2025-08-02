@@ -10,6 +10,7 @@ using System.Text;
 using Yurtlar.Models;
 using System.Net.Mail;
 using System.Web.Helpers;
+using System.Text.RegularExpressions;
 
 namespace Yurtlar.Controllers
 {
@@ -269,6 +270,22 @@ namespace Yurtlar.Controllers
         [HttpPost]
         public ActionResult Register(Users newUser)
         {
+            if (!Regex.IsMatch(newUser.Mail, @"^[\w\.-]+@ogr\..+\.edu\.tr$"))
+            {
+                ModelState.AddModelError("Mail", "Sadece @ogr.***.edu.tr uzantılı mailler geçerlidir.");
+            }
+
+            if (db.Users.Any(u => u.Mail == newUser.Mail))
+            {
+                ModelState.AddModelError("Mail", "Bu e-posta adresi zaten kayıtlı.");
+                return View(newUser);
+            }
+
+            if (string.IsNullOrWhiteSpace(newUser.Phone) || newUser.Phone.Length != 11)
+            {
+                ModelState.AddModelError("Phone", "Telefon numarası 11 haneli olmalıdır.");
+            }
+
             if (ModelState.IsValid)
             {
                 newUser.EmailVerificationCode = Guid.NewGuid();
@@ -294,7 +311,8 @@ namespace Yurtlar.Controllers
         {
             var verifyUrl = Url.Action("VerifyEmail", "Home", new { code = code }, protocol: Request.Url.Scheme);
 
-            string body = $"<h4>Hesabınızı doğrulamak için aşağıdaki linke tıklayın:</h4>" +
+            string body = $"<h4>Merhaba @user.Name,</h4>" +
+                          $"<p>Kayıt işleminizi tamamlamak için aşağıdaki bağlantıya tıklayın:</p>" +
                           $"<a href='{verifyUrl}'>Email Doğrula</a>";
 
             MailMessage message = new MailMessage();
