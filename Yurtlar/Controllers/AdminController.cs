@@ -39,7 +39,6 @@ namespace Yurtlar.Controllers
         
         }
 
-        /*
         public ActionResult GenerateAdminHash()
         {
             string plainPassword = "12345";
@@ -47,7 +46,7 @@ namespace Yurtlar.Controllers
 
             return Content(hashedPassword); // tarayıcıda görürsün
         }
-        */
+
 
         public ActionResult Logout()
         {
