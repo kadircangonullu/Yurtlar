@@ -22,6 +22,8 @@
           <Property Name="ReceiverId" Type="int" />
           <Property Name="Content" Type="nvarchar(max)" />
           <Property Name="SentAt" Type="datetime" />
+          <Property Name="IsRead" Type="bit" />
+          <Property Name="ProductId" Type="int" />
         </EntityType>
         <EntityType Name="Product">
           <Key>
@@ -54,6 +56,18 @@
           <Property Name="EmailVerificationCode" Type="uniqueidentifier" />
           <Property Name="IsVerified" Type="bit" />
         </EntityType>
+        <Association Name="FK_Message_Product">
+          <End Role="Product" Type="Self.Product" Multiplicity="0..1" />
+          <End Role="Message" Type="Self.Message" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Product">
+              <PropertyRef Name="ProductId" />
+            </Principal>
+            <Dependent Role="Message">
+              <PropertyRef Name="ProductId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_Message_Receiver">
           <End Role="Users" Type="Self.Users" Multiplicity="0..1" />
           <End Role="Message" Type="Self.Message" Multiplicity="*" />
@@ -95,6 +109,10 @@
           <EntitySet Name="Message" EntityType="Self.Message" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Product" EntityType="Self.Product" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Users" EntityType="Self.Users" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="FK_Message_Product" Association="Self.FK_Message_Product">
+            <End Role="Product" EntitySet="Product" />
+            <End Role="Message" EntitySet="Message" />
+          </AssociationSet>
           <AssociationSet Name="FK_Message_Receiver" Association="Self.FK_Message_Receiver">
             <End Role="Users" EntitySet="Users" />
             <End Role="Message" EntitySet="Message" />
@@ -114,13 +132,13 @@
       <Schema Namespace="KykMarketModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
         <EntityContainer Name="KykMarketEntities" annotation:LazyLoadingEnabled="true">
           <EntitySet Name="Admin" EntityType="KykMarketModel.Admin" />
+          <EntitySet Name="Message" EntityType="KykMarketModel.Message" />
           <EntitySet Name="Product" EntityType="KykMarketModel.Product" />
           <EntitySet Name="Users" EntityType="KykMarketModel.Users" />
-          <AssociationSet Name="FK_Product_Users" Association="KykMarketModel.FK_Product_Users">
-            <End Role="Users" EntitySet="Users" />
+          <AssociationSet Name="FK_Message_Product" Association="KykMarketModel.FK_Message_Product">
             <End Role="Product" EntitySet="Product" />
+            <End Role="Message" EntitySet="Message" />
           </AssociationSet>
-          <EntitySet Name="Message" EntityType="KykMarketModel.Message" />
           <AssociationSet Name="FK_Message_Receiver" Association="KykMarketModel.FK_Message_Receiver">
             <End Role="Users" EntitySet="Users" />
             <End Role="Message" EntitySet="Message" />
@@ -128,6 +146,10 @@
           <AssociationSet Name="FK_Message_Sender" Association="KykMarketModel.FK_Message_Sender">
             <End Role="Users" EntitySet="Users" />
             <End Role="Message" EntitySet="Message" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Product_Users" Association="KykMarketModel.FK_Product_Users">
+            <End Role="Users" EntitySet="Users" />
+            <End Role="Product" EntitySet="Product" />
           </AssociationSet>
         </EntityContainer>
         <EntityType Name="Admin">
@@ -137,6 +159,21 @@
           <Property Name="AdminId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="Password" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
           <Property Name="Name" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <EntityType Name="Message">
+          <Key>
+            <PropertyRef Name="MessageId" />
+          </Key>
+          <Property Name="MessageId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="SenderId" Type="Int32" />
+          <Property Name="ReceiverId" Type="Int32" />
+          <Property Name="Content" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="SentAt" Type="DateTime" Precision="3" />
+          <Property Name="IsRead" Type="Boolean" />
+          <Property Name="ProductId" Type="Int32" />
+          <NavigationProperty Name="Product" Relationship="KykMarketModel.FK_Message_Product" FromRole="Message" ToRole="Product" />
+          <NavigationProperty Name="Users" Relationship="KykMarketModel.FK_Message_Receiver" FromRole="Message" ToRole="Users" />
+          <NavigationProperty Name="Users1" Relationship="KykMarketModel.FK_Message_Sender" FromRole="Message" ToRole="Users" />
         </EntityType>
         <EntityType Name="Product">
           <Key>
@@ -155,6 +192,7 @@
           <Property Name="AIReason" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
           <Property Name="AIDecisionDate" Type="DateTime" Precision="3" />
           <Property Name="RequiresManualReview" Type="Boolean" />
+          <NavigationProperty Name="Message" Relationship="KykMarketModel.FK_Message_Product" FromRole="Product" ToRole="Message" />
           <NavigationProperty Name="Users" Relationship="KykMarketModel.FK_Product_Users" FromRole="Product" ToRole="Users" />
         </EntityType>
         <EntityType Name="Users">
@@ -169,34 +207,22 @@
           <Property Name="Password" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
           <Property Name="EmailVerificationCode" Type="Guid" />
           <Property Name="IsVerified" Type="Boolean" />
-          <NavigationProperty Name="Product" Relationship="KykMarketModel.FK_Product_Users" FromRole="Users" ToRole="Product" />
           <NavigationProperty Name="Message" Relationship="KykMarketModel.FK_Message_Receiver" FromRole="Users" ToRole="Message" />
           <NavigationProperty Name="Message1" Relationship="KykMarketModel.FK_Message_Sender" FromRole="Users" ToRole="Message" />
+          <NavigationProperty Name="Product" Relationship="KykMarketModel.FK_Product_Users" FromRole="Users" ToRole="Product" />
         </EntityType>
-        <Association Name="FK_Product_Users">
-          <End Type="KykMarketModel.Users" Role="Users" Multiplicity="1" />
-          <End Type="KykMarketModel.Product" Role="Product" Multiplicity="*" />
+        <Association Name="FK_Message_Product">
+          <End Type="KykMarketModel.Product" Role="Product" Multiplicity="0..1" />
+          <End Type="KykMarketModel.Message" Role="Message" Multiplicity="*" />
           <ReferentialConstraint>
-            <Principal Role="Users">
-              <PropertyRef Name="UserId" />
+            <Principal Role="Product">
+              <PropertyRef Name="ProductId" />
             </Principal>
-            <Dependent Role="Product">
-              <PropertyRef Name="UserId" />
+            <Dependent Role="Message">
+              <PropertyRef Name="ProductId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <EntityType Name="Message">
-          <Key>
-            <PropertyRef Name="MessageId" />
-          </Key>
-          <Property Name="MessageId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="SenderId" Type="Int32" />
-          <Property Name="ReceiverId" Type="Int32" />
-          <Property Name="Content" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="SentAt" Type="DateTime" Precision="3" />
-          <NavigationProperty Name="Users" Relationship="KykMarketModel.FK_Message_Receiver" FromRole="Message" ToRole="Users" />
-          <NavigationProperty Name="Users1" Relationship="KykMarketModel.FK_Message_Sender" FromRole="Message" ToRole="Users" />
-        </EntityType>
         <Association Name="FK_Message_Receiver">
           <End Type="KykMarketModel.Users" Role="Users" Multiplicity="0..1" />
           <End Type="KykMarketModel.Message" Role="Message" Multiplicity="*" />
@@ -221,7 +247,19 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-      </Schema>
+        <Association Name="FK_Product_Users">
+          <End Type="KykMarketModel.Users" Role="Users" Multiplicity="1" />
+          <End Type="KykMarketModel.Product" Role="Product" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Users">
+              <PropertyRef Name="UserId" />
+            </Principal>
+            <Dependent Role="Product">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
     <edmx:Mappings>
@@ -233,6 +271,19 @@
                 <ScalarProperty Name="Name" ColumnName="Name" />
                 <ScalarProperty Name="Password" ColumnName="Password" />
                 <ScalarProperty Name="AdminId" ColumnName="AdminId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Message">
+            <EntityTypeMapping TypeName="KykMarketModel.Message">
+              <MappingFragment StoreEntitySet="Message">
+                <ScalarProperty Name="ProductId" ColumnName="ProductId" />
+                <ScalarProperty Name="IsRead" ColumnName="IsRead" />
+                <ScalarProperty Name="SentAt" ColumnName="SentAt" />
+                <ScalarProperty Name="Content" ColumnName="Content" />
+                <ScalarProperty Name="ReceiverId" ColumnName="ReceiverId" />
+                <ScalarProperty Name="SenderId" ColumnName="SenderId" />
+                <ScalarProperty Name="MessageId" ColumnName="MessageId" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -269,18 +320,7 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="Message">
-            <EntityTypeMapping TypeName="KykMarketModel.Message">
-              <MappingFragment StoreEntitySet="Message">
-                <ScalarProperty Name="SentAt" ColumnName="SentAt" />
-                <ScalarProperty Name="Content" ColumnName="Content" />
-                <ScalarProperty Name="ReceiverId" ColumnName="ReceiverId" />
-                <ScalarProperty Name="SenderId" ColumnName="SenderId" />
-                <ScalarProperty Name="MessageId" ColumnName="MessageId" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          </EntityContainerMapping>
+        </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>
   </edmx:Runtime>

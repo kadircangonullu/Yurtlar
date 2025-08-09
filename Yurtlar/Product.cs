@@ -14,6 +14,12 @@ namespace Yurtlar
     
     public partial class Product
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
+        public Product()
+        {
+            this.Message = new HashSet<Message>();
+        }
+    
         public int ProductId { get; set; }
         public string PName { get; set; }
         public string PDesc { get; set; }
@@ -28,6 +34,8 @@ namespace Yurtlar
         public Nullable<System.DateTime> AIDecisionDate { get; set; }
         public Nullable<bool> RequiresManualReview { get; set; }
     
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<Message> Message { get; set; }
         public virtual Users Users { get; set; }
     }
 }

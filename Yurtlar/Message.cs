@@ -19,7 +19,10 @@ namespace Yurtlar
         public Nullable<int> ReceiverId { get; set; }
         public string Content { get; set; }
         public Nullable<System.DateTime> SentAt { get; set; }
+        public Nullable<bool> IsRead { get; set; }
+        public Nullable<int> ProductId { get; set; }
     
+        public virtual Product Product { get; set; }
         public virtual Users Users { get; set; }
         public virtual Users Users1 { get; set; }
     }
