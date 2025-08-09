@@ -131,9 +131,7 @@
                                 <small class="text-muted">
                                     <i class="fas fa-building me-1"></i>@item.PKyk
                                 </small>
-                                <a href="@Url.Action("ChatWithUser", "Home", new { receiverId = item.UserId })" class="btn btn-primary btn-sm">
-                                    İletişime Geç
-                                </a>
+                                @Html.ActionLink("İletişime Geç", "Chat", "Home", new { receiverId = item.UserId }, new { @class = "btn btn-success" })
                             </div>
                         </div>
                     </div>

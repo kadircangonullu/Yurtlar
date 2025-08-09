@@ -1,0 +1,243 @@
+@{
+    ViewBag.Title = "Mesajlaşma";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    int currentUserId = ViewBag.CurrentUserId;
+    var otherUser = ViewBag.OtherUser as Yurtlar.Users;
+    var messages = ViewBag.Messages as List<Yurtlar.Message>;
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sol Panel - Kullanıcı Bilgisi -->
+        <div class="col-md-3">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-user me-2"></i>Kullanıcı Bilgisi
+                    </h5>
+                </div>
+                <div class="card-body">
+                    @if (otherUser != null)
+                    {
+                        <div class="text-center mb-3">
+                            <div class="bg-primary rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
+                                <i class="fas fa-user fa-2x text-white"></i>
+                            </div>
+                        </div>
+                        <h6 class="text-center mb-2">@otherUser.Name @otherUser.Surname</h6>
+                        <p class="text-muted text-center small mb-3">@otherUser.Mail</p>
+                        
+                        <div class="border-top pt-3">
+                            <div class="d-flex justify-content-between mb-2">
+                                <span class="text-muted">Telefon:</span>
+                                <span>@otherUser.Phone</span>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-3">
+                            <a href="/Message/Index" class="btn btn-outline-secondary btn-sm w-100">
+                                <i class="fas fa-arrow-left me-2"></i>Tüm Mesajlar
+                            </a>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Sağ Panel - Mesajlaşma Alanı -->
+        <div class="col-md-9">
+            <div class="card shadow-sm">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-comments me-2"></i>
+                        @(otherUser?.Name + " " + otherUser?.Surname) ile Mesajlaşma
+                    </h5>
+                </div>
+                <div class="card-body p-0">
+                    <!-- Mesaj Alanı -->
+                    <div id="messagesContainer" class="p-3" style="height: 500px; overflow-y: auto; background-color: #f8f9fa;">
+                        <div id="messagesList">
+                            @if (messages != null && messages.Count > 0)
+                            {
+                                foreach (var message in messages)
+                                {
+                                    bool isOwnMessage = message.SenderId == currentUserId;
+                                    string messageClass = isOwnMessage ? "text-end" : "text-start";
+                                    string bgClass = isOwnMessage ? "bg-primary text-white" : "bg-light";
+                                    
+                                    <div class="mb-3 @messageClass">
+                                        <div class="d-inline-block @bgClass rounded p-2" style="max-width: 70%;">
+                                            <div class="message-content">@message.Content</div>
+                                            @if (message.ProductId.HasValue && message.Product != null)
+                                            {
+                                                <br><small class="text-info"><i class="fas fa-tag me-1"></i>@message.Product.PName</small>
+                                            }
+                                            <div class="message-time mt-1">
+                                                <small class="@(isOwnMessage ? "text-white-50" : "text-muted")">@message.SentAt?.ToString("dd.MM.yyyy HH:mm")</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            }
+                            else
+                            {
+                                <div class="text-center py-5 text-muted">
+                                    <i class="fas fa-comments fa-3x mb-3"></i>
+                                    <h5>Henüz Mesaj Yok</h5>
+                                    <p class="mb-0">İlk mesajınızı göndererek konuşmayı başlatın</p>
+                                </div>
+                            }
+                        </div>
+                    </div>
+
+                    <!-- Mesaj Gönderme Alanı -->
+                    <div class="p-3 border-top">
+                        <div class="input-group">
+                            <input type="text" id="messageInput" class="form-control" placeholder="Mesajınızı yazın..." maxlength="500">
+                            <button class="btn btn-primary" type="button" id="sendMessageBtn">
+                                <i class="fas fa-paper-plane"></i> Gönder
+                            </button>
+                        </div>
+                        <small class="text-muted">Enter tuşu ile gönderebilirsiniz</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        let currentChatUserId = @(otherUser?.UserId ?? 0);
+        let currentChatUserName = '@(otherUser?.Name + " " + otherUser?.Surname)';
+
+        $(document).ready(function() {
+            // Sayfa yüklendiğinde en alta kaydır
+            scrollToBottom();
+            
+            // Enter tuşu ile mesaj gönderme
+            $('#messageInput').keypress(function(e) {
+                if (e.which == 13) {
+                    sendMessage();
+                }
+            });
+        });
+
+        // Mesaj gönderme
+        function sendMessage() {
+            const content = $('#messageInput').val().trim();
+            if (!content || !currentChatUserId) return;
+            
+            $.post('/Message/SendMessage', {
+                receiverId: currentChatUserId,
+                content: content
+            }, function(response) {
+                if (response.success) {
+                    $('#messageInput').val('');
+                    loadMessages(currentChatUserId);
+                } else {
+                    alert('Mesaj gönderilemedi: ' + response.message);
+                }
+            });
+        }
+
+        // Mesaj gönderme butonu
+        $('#sendMessageBtn').click(sendMessage);
+
+        // Mesajları yükle
+        function loadMessages(userId) {
+            $.get('/Message/GetMessages', { userId: userId }, function(messages) {
+                displayMessages(messages);
+                scrollToBottom();
+            });
+        }
+
+        // Mesajları görüntüle
+        function displayMessages(messages) {
+            const messagesList = $('#messagesList');
+            messagesList.empty();
+            
+            if (messages.length === 0) {
+                messagesList.html(`
+                    <div class="text-center py-5 text-muted">
+                        <i class="fas fa-comments fa-3x mb-3"></i>
+                        <h5>Henüz Mesaj Yok</h5>
+                        <p class="mb-0">İlk mesajınızı göndererek konuşmayı başlatın</p>
+                    </div>
+                `);
+                return;
+            }
+            
+            messages.forEach(function(message) {
+                const isOwnMessage = message.SenderId == @currentUserId;
+                const messageHtml = createMessageHtml(message, isOwnMessage);
+                messagesList.append(messageHtml);
+            });
+        }
+
+        // Mesaj HTML'i oluştur
+        function createMessageHtml(message, isOwnMessage) {
+            const messageClass = isOwnMessage ? 'text-end' : 'text-start';
+            const bgClass = isOwnMessage ? 'bg-primary text-white' : 'bg-light';
+            const time = new Date(message.SentAt).toLocaleString('tr-TR');
+            
+            let productInfo = '';
+            if (message.ProductId && message.ProductName) {
+                productInfo = `<br><small class="text-info"><i class="fas fa-tag me-1"></i>${message.ProductName}</small>`;
+            }
+            
+            return `
+                <div class="mb-3 ${messageClass}">
+                    <div class="d-inline-block ${bgClass} rounded p-2" style="max-width: 70%;">
+                        <div class="message-content">${message.Content}</div>
+                        ${productInfo}
+                        <div class="message-time mt-1">
+                            <small class="${isOwnMessage ? 'text-white-50' : 'text-muted'}">${time}</small>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // En alta kaydır
+        function scrollToBottom() {
+            const container = $('#messagesContainer');
+            container.scrollTop(container[0].scrollHeight);
+        }
+
+        // Otomatik yenileme (30 saniyede bir)
+        setInterval(function() {
+            if (currentChatUserId) {
+                loadMessages(currentChatUserId);
+            }
+        }, 30000);
+    </script>
+}
+
+<style>
+    .message-content {
+        word-wrap: break-word;
+    }
+    
+    #messagesContainer {
+        scrollbar-width: thin;
+        scrollbar-color: #888 #f1f1f1;
+    }
+    
+    #messagesContainer::-webkit-scrollbar {
+        width: 6px;
+    }
+    
+    #messagesContainer::-webkit-scrollbar-track {
+        background: #f1f1f1;
+    }
+    
+    #messagesContainer::-webkit-scrollbar-thumb {
+        background: #888;
+        border-radius: 3px;
+    }
+    
+    #messagesContainer::-webkit-scrollbar-thumb:hover {
+        background: #555;
+    }
+</style> 

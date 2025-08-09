@@ -11,6 +11,7 @@ using Yurtlar.Models;
 using System.Net.Mail;
 using System.Web.Helpers;
 using System.Text.RegularExpressions;
+using Microsoft.AspNet.SignalR;
 
 namespace Yurtlar.Controllers
 {
@@ -67,7 +68,8 @@ namespace Yurtlar.Controllers
                                 p.PStock,
                                 p.PPrice,
                                 p.PKyk,
-                                p.Users.Phone
+                                p.Users.Phone,
+                                p.Users.UserId
                             })
                             .ToList()
                             .Select(p => new ProductViewModel
@@ -78,7 +80,8 @@ namespace Yurtlar.Controllers
                                 PStock = p.PStock.GetValueOrDefault(),
                                 PPrice = (float)p.PPrice.GetValueOrDefault(),
                                 PKyk = p.PKyk,
-                                Phone = p.Phone
+                                Phone = p.Phone,
+                                UserId = p.UserId
                             }).ToList();
 
             return View(urunler);
@@ -341,57 +344,62 @@ namespace Yurtlar.Controllers
             return View();
         }
 
-        public ActionResult ChatWithUser(int receiverId)
+
+        public ActionResult Chat(int receiverId)
         {
             if (Session["UserId"] == null)
                 return RedirectToAction("Login");
 
-            int currentUserId = (int)Session["UserId"];
+            int senderId = (int)Session["UserId"];
 
             var messages = db.Message
-    .Where(m => (m.SenderId == currentUserId && m.ReceiverId == receiverId) ||
-                (m.SenderId == receiverId && m.ReceiverId == currentUserId))
-    .OrderBy(m => m.SentAt)
-    .ToList();
+                .Where(m => (m.SenderId == senderId && m.ReceiverId == receiverId) ||
+                            (m.SenderId == receiverId && m.ReceiverId == senderId))
+                .OrderBy(m => m.SentAt)
+                .ToList();
 
-            ViewBag.Messages = messages;
-
-            // Hem gönderen hem alıcı bilgilerini gönderelim
-            ViewBag.Users = db.Users.ToList();
+            ViewBag.Receiver = db.Users.Find(receiverId);
+            ViewBag.SenderId = senderId;
             ViewBag.ReceiverId = receiverId;
 
-            return View("Chat"); // Chat.cshtml'i kullan
+            return View(messages);
         }
 
-
-        public ActionResult Chat()
+        public ActionResult Messages()
         {
-            if (Session["UserId"] == null) return RedirectToAction("Login");
+            if (Session["UserId"] == null)
+                return RedirectToAction("Login");
 
-            ViewBag.Users = db.Users.ToList();
-            return View();
+            int userId = (int)Session["UserId"];
+
+            var contacts = db.Message
+                .Where(m => m.SenderId == userId || m.ReceiverId == userId)
+                .Select(m => m.SenderId == userId ? m.ReceiverId : m.SenderId)
+                .Distinct()
+                .ToList();
+
+            var users = db.Users
+                .Where(u => contacts.Contains(u.UserId))
+                .ToList();
+
+            return View(users);
         }
 
 
         [HttpPost]
-        public ActionResult SendMessage(int fromUserId, int toUserId, string message)
+        public void SendMessage(int senderId, int receiverId, string content)
         {
-            if (Session["UserId"] == null) return RedirectToAction("Login");
-
-            var senderId = (int)Session["UserId"];
-            var msg = new Message
+            db.Message.Add(new Message
             {
-                SenderId = fromUserId,
-                ReceiverId = toUserId,
-                Content = message,
+                SenderId = senderId,
+                ReceiverId = receiverId,
+                Content = content,
                 SentAt = DateTime.Now
-            };
-
-            db.Message.Add(msg);
+            });
             db.SaveChanges();
-
-            return new HttpStatusCodeResult(200);
         }
+
+
 
 
         // GET: Home

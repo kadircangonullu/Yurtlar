@@ -1,0 +1,283 @@
+@{
+    ViewBag.Title = "Mesajlarım";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    int currentUserId = ViewBag.CurrentUserId;
+    var conversations = ViewBag.Conversations as List<Yurtlar.Controllers.ConversationViewModel>;
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sol Panel - Konuşma Listesi -->
+        <div class="col-md-4">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-comments me-2"></i>Mesajlarım
+                        <span id="unreadCount" class="badge bg-danger ms-2">0</span>
+                    </h5>
+                </div>
+                <div class="card-body p-0">
+                    <div id="conversationsList" class="list-group list-group-flush" style="max-height: 600px; overflow-y: auto;">
+                        @if (conversations != null && conversations.Count > 0)
+                        {
+                            foreach (var conv in conversations)
+                            {
+                                <div class="list-group-item conversation-item" data-user-id="@conv.OtherUserId" style="cursor: pointer;">
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <div class="flex-grow-1">
+                                            <h6 class="mb-1 text-primary">@conv.OtherUserName</h6>
+                                            <p class="mb-1 text-muted small">@conv.LastMessage</p>
+                                            <small class="text-muted">@conv.LastMessageTime.ToString("dd.MM.yyyy HH:mm")</small>
+                                            @if (!string.IsNullOrEmpty(conv.ProductName))
+                                            {
+                                                <br><small class="text-info"><i class="fas fa-tag me-1"></i>@conv.ProductName</small>
+                                            }
+                                        </div>
+                                        <div class="d-flex flex-column align-items-end">
+                                            @if (conv.UnreadCount > 0)
+                                            {
+                                                <span class="badge bg-danger rounded-pill mb-1">@conv.UnreadCount</span>
+                                            }
+                                            <button class="btn btn-sm btn-outline-primary" onclick="openChat(@conv.OtherUserId, '@conv.OtherUserName')">
+                                                <i class="fas fa-comments"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <div class="text-center py-4 text-muted">
+                                <i class="fas fa-comments fa-2x mb-2"></i>
+                                <p class="mb-0">Henüz mesajınız yok</p>
+                                <small>Ürün detay sayfalarından mesaj gönderebilirsiniz</small>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sağ Panel - Mesajlaşma Alanı -->
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-user me-2"></i>
+                        <span id="chatUserName">Bir konuşma seçin</span>
+                    </h5>
+                </div>
+                <div class="card-body p-0">
+                    <!-- Mesaj Alanı -->
+                    <div id="messagesContainer" class="p-3" style="height: 400px; overflow-y: auto; background-color: #f8f9fa;">
+                        <div id="noChatSelected" class="text-center py-5 text-muted">
+                            <i class="fas fa-comments fa-3x mb-3"></i>
+                            <h5>Mesajlaşma Başlatın</h5>
+                            <p class="mb-0">Sol panelden bir konuşma seçin veya ürün detayından mesaj gönderin</p>
+                        </div>
+                        <div id="messagesList" style="display: none;">
+                            <!-- Mesajlar buraya dinamik olarak eklenecek -->
+                        </div>
+                    </div>
+
+                    <!-- Mesaj Gönderme Alanı -->
+                    <div id="messageInputArea" class="p-3 border-top" style="display: none;">
+                        <div class="input-group">
+                            <input type="text" id="messageInput" class="form-control" placeholder="Mesajınızı yazın..." maxlength="500">
+                            <button class="btn btn-primary" type="button" id="sendMessageBtn">
+                                <i class="fas fa-paper-plane"></i> Gönder
+                            </button>
+                        </div>
+                        <small class="text-muted">Enter tuşu ile gönderebilirsiniz</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Ürün Referansı Modal -->
+<div class="modal fade" id="productReferenceModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Ürün Referansı</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p><strong>Ürün:</strong> <span id="modalProductName"></span></p>
+                <p><strong>Fiyat:</strong> <span id="modalProductPrice"></span></p>
+                <p><strong>Açıklama:</strong> <span id="modalProductDesc"></span></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Kapat</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        let currentChatUserId = null;
+        let currentChatUserName = null;
+
+        // Sayfa yüklendiğinde okunmamış mesaj sayısını güncelle
+        $(document).ready(function() {
+            updateUnreadCount();
+            
+            // Enter tuşu ile mesaj gönderme
+            $('#messageInput').keypress(function(e) {
+                if (e.which == 13) {
+                    sendMessage();
+                }
+            });
+        });
+
+        // Konuşma açma
+        function openChat(userId, userName) {
+            currentChatUserId = userId;
+            currentChatUserName = userName;
+            
+            $('#chatUserName').text(userName);
+            $('#noChatSelected').hide();
+            $('#messagesList').show();
+            $('#messageInputArea').show();
+            
+            loadMessages(userId);
+            
+            // Aktif konuşmayı vurgula
+            $('.conversation-item').removeClass('active');
+            $(`.conversation-item[data-user-id="${userId}"]`).addClass('active');
+        }
+
+        // Mesajları yükle
+        function loadMessages(userId) {
+            $.get('/Message/GetMessages', { userId: userId }, function(messages) {
+                displayMessages(messages);
+                scrollToBottom();
+            });
+        }
+
+        // Mesajları görüntüle
+        function displayMessages(messages) {
+            const messagesList = $('#messagesList');
+            messagesList.empty();
+            
+            messages.forEach(function(message) {
+                const isOwnMessage = message.SenderId == @currentUserId;
+                const messageHtml = createMessageHtml(message, isOwnMessage);
+                messagesList.append(messageHtml);
+            });
+        }
+
+        // Mesaj HTML'i oluştur
+        function createMessageHtml(message, isOwnMessage) {
+            const messageClass = isOwnMessage ? 'text-end' : 'text-start';
+            const bgClass = isOwnMessage ? 'bg-primary text-white' : 'bg-light';
+            const time = new Date(message.SentAt).toLocaleString('tr-TR');
+            
+            let productInfo = '';
+            if (message.ProductId && message.ProductName) {
+                productInfo = `<br><small class="text-info"><i class="fas fa-tag me-1"></i>${message.ProductName}</small>`;
+            }
+            
+            return `
+                <div class="mb-3 ${messageClass}">
+                    <div class="d-inline-block ${bgClass} rounded p-2" style="max-width: 70%;">
+                        <div class="message-content">${message.Content}</div>
+                        ${productInfo}
+                        <div class="message-time mt-1">
+                            <small class="${isOwnMessage ? 'text-white-50' : 'text-muted'}">${time}</small>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Mesaj gönderme
+        function sendMessage() {
+            const content = $('#messageInput').val().trim();
+            if (!content || !currentChatUserId) return;
+            
+            $.post('/Message/SendMessage', {
+                receiverId: currentChatUserId,
+                content: content
+            }, function(response) {
+                if (response.success) {
+                    $('#messageInput').val('');
+                    loadMessages(currentChatUserId);
+                    updateUnreadCount();
+                } else {
+                    alert('Mesaj gönderilemedi: ' + response.message);
+                }
+            });
+        }
+
+        // Mesaj gönderme butonu
+        $('#sendMessageBtn').click(sendMessage);
+
+        // Okunmamış mesaj sayısını güncelle
+        function updateUnreadCount() {
+            $.get('/Message/GetUnreadCount', function(count) {
+                $('#unreadCount').text(count);
+                if (count > 0) {
+                    $('#unreadCount').show();
+                } else {
+                    $('#unreadCount').hide();
+                }
+            });
+        }
+
+        // En alta kaydır
+        function scrollToBottom() {
+            const container = $('#messagesContainer');
+            container.scrollTop(container[0].scrollHeight);
+        }
+
+        // Otomatik yenileme (30 saniyede bir)
+        setInterval(function() {
+            if (currentChatUserId) {
+                loadMessages(currentChatUserId);
+            }
+            updateUnreadCount();
+        }, 30000);
+    </script>
+}
+
+<style>
+    .conversation-item:hover {
+        background-color: #f8f9fa;
+    }
+    
+    .conversation-item.active {
+        background-color: #e3f2fd;
+        border-left: 4px solid #2196f3;
+    }
+    
+    .message-content {
+        word-wrap: break-word;
+    }
+    
+    #messagesContainer {
+        scrollbar-width: thin;
+        scrollbar-color: #888 #f1f1f1;
+    }
+    
+    #messagesContainer::-webkit-scrollbar {
+        width: 6px;
+    }
+    
+    #messagesContainer::-webkit-scrollbar-track {
+        background: #f1f1f1;
+    }
+    
+    #messagesContainer::-webkit-scrollbar-thumb {
+        background: #888;
+        border-radius: 3px;
+    }
+    
+    #messagesContainer::-webkit-scrollbar-thumb:hover {
+        background: #555;
+    }
+</style> 

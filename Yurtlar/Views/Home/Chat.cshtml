@@ -1,116 +1,53 @@
-﻿@{
+﻿@model List<Yurtlar.Message>
+@{
     ViewBag.Title = "Sohbet";
-    Layout = "~/Views/Shared/_Layout.cshtml";
-    int currentUserId = (int)Session["UserId"];
+    var receiver = ViewBag.Receiver as Yurtlar.Users;
 }
 
-<h2 class="text-primary">Sohbet</h2>
+<h2>@receiver.Name @receiver.Surname ile Sohbet</h2>
 
-<div class="row mt-4">
-    <div class="col-md-4">
-        <h5>Kullanıcılar</h5>
-        <ul id="userList" class="list-group">
-            @foreach (var user in ViewBag.Users as List<Yurtlar.Users>)
-            {
-                if (user.UserId != currentUserId)
-                {
-                    <li class="list-group-item user-item" data-user-id="@user.UserId">@user.Name @user.Surname</li>
-                }
-            }
-        </ul>
-    </div>
-    <div class="col-md-8">
-        <h5 id="chatWithLabel" class="text-secondary">Kime mesaj atılacak?</h5>
-        <div id="chatBox" class="border rounded p-3 mb-3" style="height: 300px; overflow-y: auto; background-color: #f9f9f9;">
-            @if (ViewBag.Messages != null)
-            {
-                foreach (var msg in ViewBag.Messages as List<Yurtlar.Message>)
-                {
-                    if (msg.SenderId == currentUserId)
-                    {
-                        <div><strong>Siz:</strong> @msg.Content</div>
-                    }
-                    else
-                    {
-                        <div><strong>Karşı taraf:</strong> @msg.Content</div>
-                    }
-                }
-            }
+<div id="chatWindow" style="border: 1px solid #ccc; padding: 10px; height: 300px; overflow-y: scroll;">
+    @foreach (var msg in Model)
+    {
+        <div style="text-align:@(msg.SenderId == ViewBag.SenderId ? "right" : "left")">
+            <b>@(msg.SenderId == ViewBag.SenderId ? "Siz" : receiver.Name):</b> @msg.Content
         </div>
-
-        <div class="input-group">
-            <input type="text" id="messageInput" class="form-control" placeholder="Mesajınızı yazın..." />
-            <button id="sendBtn" class="btn btn-success" disabled>Gönder</button>
-        </div>
-    </div>
+    }
 </div>
 
-@section Scripts {
-    <!-- Önce jQuery -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<textarea id="messageInput" rows="2" style="width: 100%;"></textarea>
+<button id="sendBtn" type="button">Gönder</button>
 
-    <!-- Ardından SignalR (DOĞRU OLAN: Microsoft ASP.NET SignalR için 2.x sürüm!) -->
-    <script src="~/Scripts/jquery.signalR-2.4.3.min.js"></script> <!-- Bu dosya local olmalı -->
-    <!-- Ardından hubs (dinamik olarak backend'de üretiliyor) -->
+@section scripts {
+    <script src="~/Scripts/jquery-3.6.0.min.js"></script>
+    <script src="~/Scripts/jquery.signalR-2.4.3.min.js"></script>
     <script src="/signalr/hubs"></script>
 
-
     <script>
-        let selectedUserId = @ViewBag.ReceiverId ?? null;
-        const currentUserId = @currentUserId;
-
         $(function () {
-            const chat = $.connection.chatHub;
+            var senderId = '@ViewBag.SenderId';
+            var receiverId = '@ViewBag.ReceiverId';
 
-            // Gelen mesajları karşıla
-            chat.client.receiveMessage = function (fromUserId, toUserId, message) {
-                if ((fromUserId == currentUserId && toUserId == selectedUserId) ||
-                    (fromUserId == selectedUserId && toUserId == currentUserId)) {
-                    $('#chatBox').append(`<div><strong>${fromUserId == currentUserId ? "Siz" : "Karşı taraf"}:</strong> ${message}</div>`);
-                }
+            var chat = $.connection.chatHub;
+
+            chat.client.receiveMessage = function (sender, message) {
+                var align = sender === senderId ? 'right' : 'left';
+                $('#chatWindow').append('<div style="text-align:' + align + '"><b>' + (sender === senderId ? 'Siz' : '@receiver.Name') + ':</b> ' + message + '</div>');
+                $('#chatWindow').scrollTop($('#chatWindow')[0].scrollHeight);
             };
 
+            $.connection.hub.qs = { 'userId': senderId }; // userId'yi gönder
             $.connection.hub.start().done(function () {
-                $('#sendBtn').prop('disabled', false);
-
                 $('#sendBtn').click(function () {
-                    const message = $('#messageInput').val().trim(); // 🔄 önce mesajı al
-                    if (!message || !selectedUserId) return;
-
-                    // SignalR üzerinden gönder
-                    chat.server.send(currentUserId.toString(), selectedUserId.toString(), message);
-
-                    // Veritabanına yaz
-                    $.ajax({
-                        type: 'POST',
-                        url: '/Home/SendMessage',
-                        data: {
-                            fromUserId: currentUserId,
-                            toUserId: selectedUserId,
-                            message: message
-                        }
-                    });
-
-                    $('#messageInput').val(''); // 🔄 sonra temizle
-                    scrollToBottom(); // 🔄 sonra scroll
+                    var message = $('#messageInput').val();
+                    if (message.trim() !== '') {
+                        chat.server.send(senderId, receiverId, message);
+                        $('#messageInput').val('');
+                        // AJAX ile DB’ye de kaydedelim
+                        $.post('/Home/SendMessage', { senderId: senderId, receiverId: receiverId, content: message });
+                    }
                 });
-
-
-                // Kullanıcı seçimi
-                $('.user-item').click(function () {
-                    selectedUserId = $(this).data('user-id');
-                    $('#chatWithLabel').text("Seçilen kullanıcı ile sohbet başlatılıyor...");
-                    $('#chatBox').empty();
-                });
-                scrollToBottom();
             });
         });
-
-        function scrollToBottom() {
-            const chatBox = document.getElementById('chatBox');
-            chatBox.scrollTop = chatBox.scrollHeight;
-        }
-        scrollToBottom();
-
     </script>
 }

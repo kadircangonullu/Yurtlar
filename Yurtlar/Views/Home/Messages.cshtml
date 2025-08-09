@@ -1,0 +1,11 @@
+﻿@model List<Yurtlar.Users>
+
+<h2>Mesaj Geçmişiniz</h2>
+
+@foreach (var user in Model)
+{
+    <div>
+        @user.Name @user.Surname -
+        @Html.ActionLink("Sohbete Git", "Chat", new { receiverId = user.UserId }, new { @class = "btn btn-sm btn-info" })
+    </div>
+}

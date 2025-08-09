@@ -310,31 +310,38 @@
                             </span>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link @(ViewContext.RouteData.Values["Action"].ToString() == "SatisEkle" ? "active" : "")" 
+                            <a class="nav-link @(ViewContext.RouteData.Values["Action"].ToString() == "SatisEkle" ? "active" : "")"
                                href="@Url.Action("SatisEkle", "Home")">
                                 <i class="fas fa-plus-circle"></i>
                                 <span>Satış Ekle</span>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link @(ViewContext.RouteData.Values["Action"].ToString() == "UrunleriListele" ? "active" : "")" 
+                            <a class="nav-link @(ViewContext.RouteData.Values["Action"].ToString() == "UrunleriListele" ? "active" : "")"
                                href="@Url.Action("UrunleriListele", "Home")">
                                 <i class="fas fa-list"></i>
                                 <span>Ürünleri Listele</span>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link @(ViewContext.RouteData.Values["Action"].ToString() == "OnaySayfam" ? "active" : "")" 
+                            <a class="nav-link @(ViewContext.RouteData.Values["Action"].ToString() == "OnaySayfam" ? "active" : "")"
                                href="@Url.Action("OnaySayfam", "Home")">
                                 <i class="fas fa-check-circle"></i>
                                 <span>Onay Sayfam</span>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link @(ViewContext.RouteData.Values["Action"].ToString() == "Profilim" ? "active" : "")" 
+                            <a class="nav-link @(ViewContext.RouteData.Values["Action"].ToString() == "Profilim" ? "active" : "")"
                                href="@Url.Action("Profilim", "Home")">
                                 <i class="fas fa-user"></i>
                                 <span>Profilim</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link @(ViewContext.RouteData.Values["Action"].ToString() == "Messages" ? "active" : "")"
+                               href="@Url.Action("Messages", "Home")">
+                                <i class="fas fa-user"></i>
+                                <span>Messages</span>
                             </a>
                         </li>
                         <li class="nav-item">
@@ -348,31 +355,31 @@
                     {
                         <!-- Giriş yapılmamışsa -->
                         <li class="nav-item">
-                            <a class="nav-link @(ViewContext.RouteData.Values["Action"].ToString() == "Login" ? "active" : "")" 
+                            <a class="nav-link @(ViewContext.RouteData.Values["Action"].ToString() == "Login" ? "active" : "")"
                                href="@Url.Action("Login", "Home")">
                                 <i class="fas fa-sign-in-alt"></i>
                                 <span>Giriş Yap</span>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link @(ViewContext.RouteData.Values["Action"].ToString() == "Register" ? "active" : "")" 
+                            <a class="nav-link @(ViewContext.RouteData.Values["Action"].ToString() == "Register" ? "active" : "")"
                                href="@Url.Action("Register", "Home")">
                                 <i class="fas fa-user-plus"></i>
                                 <span>Kayıt Ol</span>
                             </a>
                         </li>
                     }
-                    
+
                     <!-- Hakkımızda ve İletişim linkleri -->
                     <li class="nav-item">
-                        <a class="nav-link @(ViewContext.RouteData.Values["Action"].ToString() == "Hakkimizda" ? "active" : "")" 
+                        <a class="nav-link @(ViewContext.RouteData.Values["Action"].ToString() == "Hakkimizda" ? "active" : "")"
                            href="@Url.Action("Hakkimizda", "Home")">
                             <i class="fas fa-info-circle"></i>
                             <span>Hakkımızda</span>
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link @(ViewContext.RouteData.Values["Action"].ToString() == "Iletisim" ? "active" : "")" 
+                        <a class="nav-link @(ViewContext.RouteData.Values["Action"].ToString() == "Iletisim" ? "active" : "")"
                            href="@Url.Action("Iletisim", "Home")">
                             <i class="fas fa-envelope"></i>
                             <span>İletişim</span>

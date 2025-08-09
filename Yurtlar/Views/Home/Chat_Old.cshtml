@@ -1,0 +1,667 @@
+﻿@{
+    ViewBag.Title = "Sohbet";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    int currentUserId = (int)Session["UserId"];
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sol Panel - Gelen Mesajlar ve Sohbet Geçmişi -->
+        <div class="col-md-4">
+            <!-- Gelen Mesajlar Bölümü -->
+            <div class="card shadow-sm mb-3">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="fas fa-inbox me-2"></i>Gelen Mesajlar</h5>
+                </div>
+                <div class="card-body p-0">
+                                         <div id="incomingMessages" class="list-group list-group-flush" style="max-height: 300px; overflow-y: auto;">
+                         <!-- Gelen mesajlar buraya dinamik olarak eklenecek -->
+                         @if (ViewBag.ChatHistory != null)
+                         {
+                             var chatHistory = ViewBag.ChatHistory as List<dynamic>;
+                             if (chatHistory != null && chatHistory.Count > 0)
+                             {
+                                 foreach (var chat in chatHistory)
+                                 {
+                                     <div class="list-group-item incoming-message" data-user-id="@chat.UserId" data-message-id="@(chat.UserId)_@(chat.LastMessageTime.ToString("yyyyMMddHHmmss"))">
+                                         <div class="d-flex justify-content-between align-items-start">
+                                             <div class="flex-grow-1">
+                                                 <h6 class="mb-1 text-primary">@chat.UserName</h6>
+                                                 <p class="mb-1 text-muted small">@chat.LastMessage</p>
+                                                 <small class="text-muted">@chat.LastMessageTime.ToString("dd.MM.yyyy HH:mm")</small>
+                                             </div>
+                                             <div class="d-flex gap-1">
+                                                 <button class="btn btn-sm btn-outline-primary reply-btn" onclick="replyToUser(@chat.UserId, '@chat.UserName')">
+                                                     <i class="fas fa-reply"></i>
+                                                 </button>
+                                                 <button class="btn btn-sm btn-outline-secondary dismiss-btn" onclick="dismissMessage('@(chat.UserId)_@(chat.LastMessageTime.ToString("yyyyMMddHHmmss"))')">
+                                                     <i class="fas fa-times"></i>
+                                                 </button>
+                                             </div>
+                                         </div>
+                                     </div>
+                                 }
+                             }
+                         }
+                         else
+                         {
+                             <div id="noIncomingMessages" class="text-center py-4 text-muted">
+                                 <i class="fas fa-inbox fa-2x mb-2"></i>
+                                 <p class="mb-0">Henüz gelen mesaj yok</p>
+                             </div>
+                         }
+                     </div>
+                </div>
+            </div>
+            
+            <!-- Sohbet Geçmişi Bölümü -->
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-history me-2"></i>Sohbet Geçmişi</h5>
+                </div>
+                <div class="card-body p-0">
+                                         <div id="chatHistory" class="list-group list-group-flush" style="max-height: 300px; overflow-y: auto;">
+                         <!-- Sohbet geçmişi buraya dinamik olarak eklenecek -->
+                         @if (ViewBag.ChatHistory != null)
+                         {
+                             var chatHistory = ViewBag.ChatHistory as List<dynamic>;
+                             if (chatHistory != null && chatHistory.Count > 0)
+                             {
+                                 foreach (var chat in chatHistory)
+                                 {
+                                     <div class="list-group-item chat-history-item" data-user-id="@chat.UserId">
+                                         <div class="d-flex justify-content-between align-items-start">
+                                             <div class="flex-grow-1">
+                                                 <h6 class="mb-1 text-primary">@chat.UserName</h6>
+                                                 <p class="mb-1 text-muted small">@chat.LastMessage</p>
+                                                 <small class="text-muted">@chat.LastMessageTime.ToString("dd.MM.yyyy HH:mm")</small>
+                                             </div>
+                                             <div class="d-flex flex-column align-items-end">
+                                                 @if (chat.UnreadCount > 0)
+                                                 {
+                                                     <span class="badge bg-danger rounded-pill mb-1">@chat.UnreadCount</span>
+                                                 }
+                                                 <button class="btn btn-sm btn-outline-primary" onclick="openChatWithUser(@chat.UserId, '@chat.UserName')">
+                                                     <i class="fas fa-comments"></i>
+                                                 </button>
+                                             </div>
+                                         </div>
+                                     </div>
+                                 }
+                             }
+                         }
+                         else
+                         {
+                             <div id="noChatHistory" class="text-center py-4 text-muted">
+                                 <i class="fas fa-comments fa-2x mb-2"></i>
+                                 <p class="mb-0">Henüz sohbet geçmişi yok</p>
+                             </div>
+                         }
+                     </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Sağ Panel - Sohbet Alanı -->
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-info text-white">
+                    <h5 id="chatWithLabel" class="mb-0">
+                        <i class="fas fa-comments me-2"></i>
+                        <span id="selectedUserName">@(ViewBag.ReceiverName ?? "Sohbet")</span>
+                    </h5>
+                </div>
+                <div class="card-body p-0">
+                    <div id="chatBox" class="border-0 p-3" style="height: 400px; overflow-y: auto; background-color: #f8f9fa;">
+                        @if (ViewBag.Messages != null)
+                        {
+                            foreach (var msg in ViewBag.Messages as List<Yurtlar.Message>)
+                            {
+                                if (msg.SenderId == currentUserId)
+                                {
+                                    <div class="d-flex justify-content-end mb-2">
+                                        <div class="bg-primary text-white rounded p-2" style="max-width: 70%;">
+                                            <small class="d-block text-light">Siz</small>
+                                            <span>@msg.Content</span>
+                                        </div>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="d-flex justify-content-start mb-2">
+                                        <div class="bg-light text-dark rounded p-2" style="max-width: 70%;">
+                                            <small class="d-block text-muted">@msg.Users?.Name</small>
+                                            <span>@msg.Content</span>
+                                        </div>
+                                    </div>
+                                }
+                            }
+                        }
+                    </div>
+                    <div class="card-footer bg-white">
+                        <div class="input-group">
+                            <input type="text" id="messageInput" class="form-control" placeholder="Mesajınızı yazın..." />
+                            <button id="sendBtn" class="btn btn-success" disabled>
+                                <i class="fas fa-paper-plane me-1"></i>Gönder
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+
+    
+    .incoming-message {
+        border-left: 3px solid #28a745;
+        transition: all 0.3s ease;
+        background-color: #f8fff9;
+        margin-bottom: 8px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        animation: slideIn 0.3s ease-out;
+    }
+    
+    @@keyframes slideIn {
+        from {
+            opacity: 0;
+            transform: translateX(-20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+    
+    .incoming-message:hover {
+        background-color: #e8f5e8;
+        transform: translateX(2px);
+    }
+    
+    .reply-btn, .dismiss-btn {
+        opacity: 0.7;
+        transition: opacity 0.3s ease;
+        font-size: 0.8rem;
+        padding: 0.25rem 0.5rem;
+    }
+    
+    .incoming-message:hover .reply-btn,
+    .incoming-message:hover .dismiss-btn {
+        opacity: 1;
+    }
+    
+    .dismiss-btn:hover {
+        background-color: #dc3545;
+        border-color: #dc3545;
+        color: white;
+    }
+    
+    #chatBox {
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    }
+    
+    .unread-count {
+        font-size: 0.7rem;
+        min-width: 20px;
+        height: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .card-header {
+        border-bottom: none;
+        font-weight: 600;
+    }
+    
+    .list-group-item {
+        border: none;
+        border-bottom: 1px solid #f8f9fa;
+    }
+    
+    .list-group-item:last-child {
+        border-bottom: none;
+    }
+    
+    .chat-history-item {
+        border-left: 3px solid #007bff;
+        transition: all 0.3s ease;
+        background-color: #f8f9fa;
+        margin-bottom: 8px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        animation: slideIn 0.3s ease-out;
+    }
+    
+    .chat-history-item:hover {
+        background-color: #e3f2fd;
+        transform: translateX(2px);
+    }
+    
+    .chat-history-item .btn {
+        opacity: 0.7;
+        transition: opacity 0.3s ease;
+        font-size: 0.8rem;
+        padding: 0.25rem 0.5rem;
+    }
+    
+    .chat-history-item:hover .btn {
+        opacity: 1;
+    }
+</style>
+
+@section Scripts {
+    <!-- Önce jQuery -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+    <!-- Ardından SignalR (DOĞRU OLAN: Microsoft ASP.NET SignalR için 2.x sürüm!) -->
+    <script src="~/Scripts/jquery.signalR-2.4.3.min.js"></script> <!-- Bu dosya local olmalı -->
+    <!-- Ardından hubs (dinamik olarak backend'de üretiliyor) -->
+    <script src="/signalr/hubs"></script>
+
+
+    <script>
+        let selectedUserId = @Html.Raw(Json.Encode(ViewBag.ReceiverId ?? null));
+        const currentUserId = @currentUserId;
+        let selectedUserName = '@ViewBag.ReceiverName';
+        let processedMessages = new Set(); // İşlenmiş mesajları takip etmek için
+        let lastMessageId = 0; // Son mesaj ID'sini takip etmek için
+        let connectionAttempts = 0;
+        const maxConnectionAttempts = 5;
+
+        $(function () {
+            const chat = $.connection.chatHub;
+
+            // Bağlantı durumunu izle
+            $.connection.hub.connectionSlow(function () {
+                console.log("Bağlantı yavaş");
+            });
+
+            $.connection.hub.reconnecting(function () {
+                console.log("Yeniden bağlanıyor...");
+            });
+
+            $.connection.hub.reconnected(function () {
+                console.log("Yeniden bağlandı");
+            });
+
+            $.connection.hub.disconnected(function () {
+                console.log("Bağlantı kesildi");
+                if (connectionAttempts < maxConnectionAttempts) {
+                    connectionAttempts++;
+                    setTimeout(function () {
+                        $.connection.hub.start();
+                    }, 5000);
+                }
+            });
+
+            // Gelen mesajları karşıla
+            chat.client.receiveMessage = function (fromUserId, toUserId, message, senderName) {
+                console.log("ALICI:", currentUserId, "GÖNDEREN:", fromUserId, "SEÇİLİ:", selectedUserId);
+                // Eğer mesaj bize geliyorsa
+                if (toUserId == currentUserId) {
+                    // Mesaj ID'si oluştur (timestamp + senderId + content length)
+                    const messageId = Date.now() + '_' + fromUserId + '_' + message.length;
+
+                    // Eğer bu mesaj daha önce işlenmemişse
+                    if (!processedMessages.has(messageId)) {
+                        processedMessages.add(messageId);
+
+                        // Gelen mesajlar bölümüne ekle
+                        addIncomingMessage(fromUserId, senderName, message, messageId);
+
+                        // Eğer o kullanıcı ile sohbet açıksa, sohbet alanına da ekle
+                        if (parseInt(fromUserId) === parseInt(selectedUserId)) {
+                            console.log("Mesaj chat kutusuna eklenecek");
+                            addMessageToChat(fromUserId, senderName, message, false);
+                        }
+
+                        // Sohbet geçmişini güncelle
+                        updateChatHistory();
+                    }
+                }
+                // Eğer bizim gönderdiğimiz mesaj ise
+                else if (fromUserId == currentUserId && toUserId == selectedUserId) {
+                    addMessageToChat(fromUserId, 'Siz', message, true);
+                }
+            };
+
+            $.connection.hub.start({ transport: ['webSockets', 'longPolling'] }).done(function () {
+                console.log("SignalR bağlantısı başarılı");
+                connectionAttempts = 0;
+                $('#sendBtn').prop('disabled', false);
+
+                // Enter tuşu ile mesaj gönderme
+                $('#messageInput').keypress(function(e) {
+                    if(e.which == 13 && !e.shiftKey) {
+                        e.preventDefault();
+                        sendMessage();
+                    }
+                });
+
+                $('#sendBtn').click(function () {
+                    sendMessage();
+                });
+
+                // Eğer receiverId varsa, sohbet alanını hazırla
+                if (selectedUserId) {
+                    $('#selectedUserName').text(selectedUserName);
+                    loadMessages(selectedUserId);
+                }
+
+                // Test için tüm mesajları kontrol et
+                testMessages();
+                
+                // SignalR bağlantısını test et
+                testSignalRConnection();
+
+                // Sayfa yüklendiğinde mevcut gelen mesajları yükle (eğer boşsa)
+                if ($('#incomingMessages .incoming-message').length === 0) {
+                    loadIncomingMessages();
+                }
+
+                // Sohbet geçmişini yükle (eğer boşsa)
+                if ($('#chatHistory .chat-history-item').length === 0) {
+                    loadChatHistory();
+                }
+
+                // Chat sayfasına girildiğinde bildirim sayısını sıfırla
+                $('#messageNotification').hide();
+                document.title = 'KYK Pazar';
+
+                // Gelen mesajları periyodik olarak kontrol et (sadece yeni mesajlar için)
+                setInterval(checkIncomingMessages, 10000); // 10 saniyede bir kontrol et
+
+                scrollToBottom();
+            }).fail(function (error) {
+                console.error("SignalR bağlantı hatası:", error);
+                if (connectionAttempts < maxConnectionAttempts) {
+                    connectionAttempts++;
+                    setTimeout(function () {
+                        $.connection.hub.start();
+                    }, 3000);
+                }
+            });
+        });
+
+        function sendMessage() {
+            const message = $('#messageInput').val().trim();
+            if (!message || !selectedUserId) return;
+
+            // Mesajı hemen sohbet alanına ekle
+            addMessageToChat(currentUserId, 'Siz', message, true);
+            $('#messageInput').val('');
+
+            // SignalR üzerinden gönder
+            const chat = $.connection.chatHub;
+            chat.server.send(currentUserId.toString(), selectedUserId.toString(), message, 'Siz');
+
+            // Veritabanına yaz
+            $.ajax({
+                type: 'POST',
+                url: '/Home/SendMessage',
+                data: {
+                    fromUserId: currentUserId,
+                    toUserId: selectedUserId,
+                    message: message
+                },
+                success: function() {
+                    scrollToBottom();
+                    // Sohbet geçmişini güncelle
+                    updateChatHistory();
+                },
+                error: function() {
+                    // Hata durumunda mesajı kaldır
+                    $('#chatBox .d-flex.justify-content-end').last().remove();
+                    alert('Mesaj gönderilemedi. Lütfen tekrar deneyin.');
+                }
+            });
+        }
+
+        function addMessageToChat(fromUserId, senderName, message, isOwn) {
+            const messageHtml = isOwn ?
+                `<div class="d-flex justify-content-end mb-2">
+                    <div class="bg-primary text-white rounded p-2" style="max-width: 70%;">
+                        <small class="d-block text-light">${senderName}</small>
+                        <span>${message}</span>
+                    </div>
+                </div>` :
+                `<div class="d-flex justify-content-start mb-2">
+                    <div class="bg-light text-dark rounded p-2" style="max-width: 70%;">
+                        <small class="d-block text-muted">${senderName}</small>
+                        <span>${message}</span>
+                    </div>
+                </div>`;
+
+            $('#chatBox').append(messageHtml);
+            scrollToBottom();
+        }
+
+        function addIncomingMessage(fromUserId, senderName, message, messageId) {
+            // Eğer bu mesaj zaten varsa ekleme
+            if ($(`[data-message-id="${messageId}"]`).length > 0) {
+                return;
+            }
+
+            // "Boş mesaj" göstergesini gizle
+            $('#noIncomingMessages').hide();
+
+            const messageHtml = `
+                <div class="list-group-item incoming-message" data-user-id="${fromUserId}" data-message-id="${messageId}">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div class="flex-grow-1">
+                            <h6 class="mb-1 text-primary">${senderName}</h6>
+                            <p class="mb-1 text-muted small">${message}</p>
+                            <small class="text-muted">${new Date().toLocaleTimeString()}</small>
+                        </div>
+                        <div class="d-flex gap-1">
+                            <button class="btn btn-sm btn-outline-primary reply-btn" onclick="replyToUser(${fromUserId}, '${senderName}')">
+                                <i class="fas fa-reply"></i>
+                            </button>
+                            <button class="btn btn-sm btn-outline-secondary dismiss-btn" onclick="dismissMessage('${messageId}')">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>`;
+
+            $('#incomingMessages').prepend(messageHtml);
+
+            // 30 saniye sonra mesajı otomatik olarak kaldır
+            setTimeout(() => {
+                dismissMessage(messageId);
+            }, 30000);
+        }
+
+        function replyToUser(userId, userName) {
+            selectedUserId = userId;
+            selectedUserName = userName;
+
+            $('#selectedUserName').text(selectedUserName);
+            $('#chatBox').empty();
+
+            // Bu kullanıcıdan gelen mesajları yükle
+            loadMessages(selectedUserId);
+
+            // Gelen mesajı kaldır
+            $(`.incoming-message[data-user-id="${userId}"]`).remove();
+        }
+
+        function dismissMessage(messageId) {
+            $(`.incoming-message[data-message-id="${messageId}"]`).fadeOut(300, function() {
+                $(this).remove();
+            });
+        }
+
+        function loadMessages(userId) {
+            $.ajax({
+                type: 'GET',
+                url: '/Home/GetMessages',
+                data: { receiverId: userId },
+                success: function (messages) {
+                    console.log("Gelen mesajlar (GetMessages):", messages);
+                    $('#chatBox').empty();
+                    messages.forEach(function(msg) {
+                        const isOwn = msg.SenderId == currentUserId;
+                        addMessageToChat(msg.SenderId, isOwn ? 'Siz' : selectedUserName, msg.Content, isOwn);
+                    });
+                }
+            });
+        }
+
+        function loadIncomingMessages() {
+            $.ajax({
+                type: 'GET',
+                url: '/Home/GetIncomingMessages',
+                success: function(messages) {
+                    console.log('Gelen mesajlar:', messages);
+                    let hasMessages = false;
+                    messages.forEach(function(msg) {
+                        hasMessages = true;
+                        // Mesaj ID'si olarak timestamp + senderId + content hash'i kullan
+                        if (msg && msg.Content && msg.SentAt) {
+                            const messageId = msg.SentAt.replace(/[^0-9]/g, '') + '_' + msg.SenderId + '_' + msg.Content.length;
+                            if (!processedMessages.has(messageId)) {
+                                processedMessages.add(messageId);
+                                addIncomingMessage(msg.SenderId, msg.SenderName, msg.Content, messageId);
+                            }
+                        }
+                    });
+
+                    // Eğer mesaj varsa "boş mesaj" göstergesini gizle
+                    if (hasMessages) {
+                        $('#noIncomingMessages').hide();
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error('Gelen mesajlar yüklenirken hata:', error);
+                }
+            });
+        }
+
+        function loadChatHistory() {
+            $.ajax({
+                type: 'GET',
+                url: '/Home/GetChatHistory',
+                success: function(chatHistory) {
+                    console.log('Sohbet geçmişi:', chatHistory);
+                    let hasHistory = false;
+                    chatHistory.forEach(function(chat) {
+                        hasHistory = true;
+                        addChatHistoryItem(chat.UserId, chat.UserName, chat.LastMessage, chat.LastMessageTime, chat.UnreadCount);
+                    });
+
+                    // Eğer sohbet geçmişi varsa "boş geçmiş" göstergesini gizle
+                    if (hasHistory) {
+                        $('#noChatHistory').hide();
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error('Sohbet geçmişi yüklenirken hata:', error);
+                }
+            });
+        }
+
+        function addChatHistoryItem(userId, userName, lastMessage, lastMessageTime, unreadCount) {
+            const historyHtml = `
+                <div class="list-group-item chat-history-item" data-user-id="${userId}">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div class="flex-grow-1">
+                            <h6 class="mb-1 text-primary">${userName}</h6>
+                            <p class="mb-1 text-muted small">${lastMessage}</p>
+                            <small class="text-muted">${new Date(lastMessageTime).toLocaleString()}</small>
+                        </div>
+                        <div class="d-flex flex-column align-items-end">
+                            ${unreadCount > 0 ? `<span class="badge bg-danger rounded-pill mb-1">${unreadCount}</span>` : ''}
+                            <button class="btn btn-sm btn-outline-primary" onclick="openChatWithUser(${userId}, '${userName}')">
+                                <i class="fas fa-comments"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>`;
+
+            $('#chatHistory').prepend(historyHtml);
+        }
+
+        function openChatWithUser(userId, userName) {
+            selectedUserId = userId;
+            selectedUserName = userName;
+
+            $('#selectedUserName').text(selectedUserName);
+            $('#chatBox').empty();
+
+            // Bu kullanıcıdan gelen mesajları yükle
+            loadMessages(selectedUserId);
+        }
+
+        function testMessages() {
+            $.ajax({
+                type: 'GET',
+                url: '/Home/TestMessages',
+                success: function(messages) {
+                    console.log('Tüm mesajlar:', messages);
+                },
+                error: function(xhr, status, error) {
+                    console.error('Test mesajları alınırken hata:', error);
+                }
+            });
+        }
+
+        function testSignalRConnection() {
+            $.ajax({
+                type: 'GET',
+                url: '/Home/TestSignalRConnection',
+                success: function(result) {
+                    console.log('SignalR test sonucu:', result);
+                    if (result.success) {
+                        console.log('SignalR bağlantısı başarılı');
+                    } else {
+                        console.error('SignalR bağlantı hatası:', result.message);
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error('SignalR test hatası:', error);
+                }
+            });
+        }
+
+        function updateChatHistory() {
+            // Sohbet geçmişini yeniden yükle
+            $('#chatHistory').empty();
+            $('#noChatHistory').show();
+            loadChatHistory();
+        }
+
+        function checkIncomingMessages() {
+            $.ajax({
+                type: 'GET',
+                url: '/Home/GetIncomingMessages',
+                data: { lastMessageId: lastMessageId },
+                success: function (messages) {
+                    console.log("Gelen mesajlar (GetMessages):", messages);
+                    $('#chatBox').empty();
+
+                    // >>>>> SIRALAMA BURADA <<<<<
+                    messages.sort((a, b) => {
+                        return new Date(a.SentAt) - new Date(b.SentAt);
+                    });
+
+                    messages.forEach(function (msg) {
+                        const isOwn = msg.SenderId == currentUserId;
+                        addMessageToChat(msg.SenderId, isOwn ? 'Siz' : selectedUserName, msg.Content, isOwn);
+                    });
+                }
+            });
+        }
+
+        function scrollToBottom() {
+            const chatBox = document.getElementById('chatBox');
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        scrollToBottom();
+    </script>
+}
